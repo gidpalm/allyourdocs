@@ -111,3 +111,4 @@ temp/
 *.crt
 *.p12
 *.pfx
+.vercel

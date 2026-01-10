@@ -3,6 +3,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import Navigation from "@/components/Navigation"
 import Footer from "@/components/Footer"
+import Script from "next/script"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -104,6 +105,30 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} scroll-smooth`}>
       <head>
+        {/* AdSense Meta Tag */}
+        <meta name="google-adsense-account" content="ca-pub-9089093304511732" />
+        
+        {/* AdSense Script */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9089093304511732"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+        
+        {/* AdSense Auto Ads Initialization */}
+        <Script
+          id="adsbygoogle-init"
+          strategy="afterInteractive"
+        >
+          {`
+            (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-9089093304511732",
+              enable_page_level_ads: true
+            });
+          `}
+        </Script>
+        
         {/* Structured Data */}
         <script
           type="application/ld+json"
@@ -192,6 +217,7 @@ export default function RootLayout({
         {/* Preconnect to important domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
       </head>
       <body className={`${inter.className} antialiased bg-white text-gray-900 min-h-screen flex flex-col`}>
         {/* Skip navigation for accessibility */}

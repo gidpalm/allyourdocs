@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
               </div>
               
               <div class="footer">
-                <p>This feedback was submitted via AllYourDocs.pro Feedback Form</p>
+                <p>This feedback was submitted via AllYourDocs.com Feedback Form</p>
                 <p>Timestamp: ${new Date().toISOString()}</p>
               </div>
             </div>
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
                 
                 <div class="footer">
                   <p>Best regards,</p>
-                  <p><strong>The AllYourDocs.pro Team</strong></p>
+                  <p><strong>The AllYourDocs.com Team</strong></p>
                   <p>This is an automated message. Please do not reply directly to this email.</p>
                 </div>
               </div>

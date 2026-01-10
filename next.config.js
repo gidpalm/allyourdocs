@@ -15,6 +15,28 @@ const nextConfig = {
     unoptimized: true,
   },
   
+  // ADD THIS: Environment variable for your domain
+  env: {
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://allyourdocs.com',
+  },
+  
+  // ADD THIS: Redirect from old URL to new domain
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'allyourdocs-six.vercel.app',
+          },
+        ],
+        destination: 'https://allyourdocs.com/:path*',
+        permanent: true,
+      },
+    ]
+  },
+  
   // Security headers directly in next.config.js
   async headers() {
     return [

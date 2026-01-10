@@ -1,26 +1,21 @@
 ﻿// frontend/next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Basic config
   output: 'standalone',
   poweredByHeader: false,
   
-  // TypeScript
   typescript: {
-    ignoreBuildErrors: true, // Keep true for now, fix later
+    ignoreBuildErrors: true,
   },
   
-  // Images
   images: {
     unoptimized: true,
   },
   
-  // ADD THIS: Environment variable for your domain
   env: {
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://allyourdocs.com',
   },
   
-  // ADD THIS: Redirect from old URL to new domain
   async redirects() {
     return [
       {
@@ -37,7 +32,7 @@ const nextConfig = {
     ]
   },
   
-  // Security headers directly in next.config.js
+  // ✅ UPDATED HEADERS - Add CORS for AdSense
   async headers() {
     return [
       {
@@ -59,12 +54,20 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
+          // ✅ Allow AdSense to access your site
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: 'https://pagead2.googlesyndication.com',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, OPTIONS',
+          },
         ],
       },
     ]
   },
   
-  // Add experimental config for stability
   experimental: {
     webpackBuildWorker: true,
   },

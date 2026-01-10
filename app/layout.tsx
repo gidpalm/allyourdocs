@@ -42,6 +42,12 @@ export const metadata: Metadata = {
   authors: [{ name: "AllYourDocs.com" }],
   creator: "AllYourDocs.com",
   publisher: "AllYourDocs.com",
+  
+  // ✅ ADD THIS - Put AdSense verification in metadata
+  other: {
+    'google-adsense-account': 'ca-pub-9089093304511732',
+  },
+  
   robots: {
     index: true,
     follow: true,
@@ -81,9 +87,9 @@ export const metadata: Metadata = {
     creator: "@allyourdocs",
   },
   
-  // Verification (Update these after setup)
+  // Verification
   verification: {
-    google: "add-your-code-here", // From Google Search Console
+    google: "add-your-code-here",
   },
   
   alternates: {
@@ -105,17 +111,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} scroll-smooth`}>
       <head>
-        {/* AdSense Meta Tag */}
-        <meta name="google-adsense-account" content="ca-pub-9089093304511732" />
-        
-        {/* AdSense Script */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9089093304511732"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-        
+        <script async crossOrigin="anonymous" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9089093304511732"></script>
+     
         {/* AdSense Auto Ads Initialization */}
         <Script
           id="adsbygoogle-init"
@@ -214,7 +211,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
         
-        {/* Preconnect to important domains */}
+        {/* Preconnect */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />

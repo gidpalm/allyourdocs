@@ -1,11 +1,6 @@
 ﻿import { FileText, File, Image, Scissors, Type, RefreshCw, Upload, Settings, Download, Minus, Maximize2 } from "lucide-react"
 import Link from "next/link"
 
-import AdUnit from '@/components/AdUnit'
-
-// In your component, place ads strategically:
-<AdUnit format="horizontal" slotId="1234567890" className="mt-8" />
-
 export default function Home() {
   const features = [
     { title: "Merge PDFs", description: "Combine multiple PDF files into a single document", icon: FileText, path: "/merge-pdf", color: "bg-blue-50 border-blue-100", iconColor: "text-blue-600" },

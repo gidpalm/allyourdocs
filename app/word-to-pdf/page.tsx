@@ -1,12 +1,11 @@
-﻿// app/word-to-pdf/page.tsx - COMPLETE FIXED VERSION
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect } from 'react';
 import mammoth from 'mammoth';
 import { jsPDF } from 'jspdf';
 import { Download, AlertCircle, CheckCircle, Loader2, FileText } from 'lucide-react';
 
-// Import html2canvas dynamically to avoid SSR issues
+// Import html2canvas dynamically
 let html2canvas: any = null;
 if (typeof window !== 'undefined') {
   import('html2canvas').then(module => {
@@ -34,6 +33,70 @@ export default function WordToPDF() {
       }
     };
   }, [downloadUrl]);
+
+  // Add structured data for SEO
+  useEffect(() => {
+    // Add HowTo schema for this specific page
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.innerHTML = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "Convert Word to PDF Online - Free Converter",
+      "description": "Step-by-step guide to convert Microsoft Word documents to PDF format online for free",
+      "image": "https://allyourdocs.com/og-image.png",
+      "totalTime": "PT1M",
+      "estimatedCost": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": "0"
+      },
+      "supply": [
+        {
+          "@type": "HowToSupply",
+          "name": "Word document"
+        }
+      ],
+      "tool": [
+        {
+          "@type": "HowToTool",
+          "name": "AllYourDocs Word to PDF Converter"
+        }
+      ],
+      "step": [
+        {
+          "@type": "HowToStep",
+          "name": "Upload Word file",
+          "text": "Click 'Select a Word file' to upload your .doc or .docx document",
+          "image": "https://allyourdocs.com/howto-step1.png"
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Convert to PDF",
+          "text": "Click 'Convert to PDF' button to start the conversion process",
+          "image": "https://allyourdocs.com/howto-step2.png"
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Download PDF",
+          "text": "Click 'Download PDF' to save your converted file to your computer",
+          "image": "https://allyourdocs.com/howto-step3.png"
+        }
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "Document Conversion"
+      }
+    });
+    
+    document.head.appendChild(script);
+    
+    return () => {
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -345,222 +408,298 @@ export default function WordToPDF() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6">
-              <FileText className="w-8 h-8 md:w-10 md:h-10 text-white" />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-3">Word to PDF Converter</h1>
-            <p className="text-gray-600 text-sm md:text-base">
-              Convert Word documents to PDF while preserving formatting
-            </p>
-          </div>
-
-          {/* File Upload */}
-          <div className="mb-8">
-            <div
-              className={`border-3 border-dashed rounded-2xl transition-all duration-300 cursor-pointer ${
-                file ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-blue-300 hover:bg-blue-50'
-              }`}
-              onClick={() => document.getElementById('file-input')?.click()}
-            >
-              <div className="text-center py-8 md:py-12">
-                <input
-                  id="file-input"
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".doc,.docx"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
-                
-                {file ? (
-                  <div>
-                    <div className="flex items-center justify-center mb-2">
-                      <FileText className="w-5 h-5 text-green-600 mr-2" />
-                      <div className="text-green-600 font-semibold text-lg truncate max-w-xs">{file.name}</div>
-                    </div>
-                    <div className="text-gray-500 text-sm">
-                      {formatFileSize(file.size)} • Ready to convert
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        document.getElementById('file-input')?.click();
-                      }}
-                      className="text-blue-600 font-medium mt-4 hover:text-blue-800 text-sm"
-                    >
-                      Choose different file
-                    </button>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="text-blue-600 font-semibold text-lg mb-2">Select a Word file</div>
-                    <div className="text-gray-500">Click to browse or drag and drop</div>
-                    <div className="text-gray-400 text-sm mt-2">
-                      Supports: .doc, .docx • No file size limit
-                    </div>
-                  </div>
-                )}
+    <>
+      {/* SEO Meta Tags (For Search Engines) */}
+      <div className="sr-only" aria-hidden="true">
+        <h1>Free Word to PDF Converter - Convert DOC/DOCX to PDF Online</h1>
+        <p>Convert Microsoft Word documents to PDF format instantly. No registration, no watermarks, 100% free.</p>
+        <p>Keywords: Word to PDF, DOC to PDF, DOCX to PDF, convert Word to PDF, free Word converter, online PDF converter, Microsoft Word to PDF, document conversion, Office to PDF, Word file converter</p>
+      </div>
+      
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+            {/* Header with SEO Keywords */}
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6">
+                <FileText className="w-8 h-8 md:w-10 md:h-10 text-white" />
               </div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-3">
+                Free Word to PDF Converter
+              </h1>
+              <p className="text-gray-600 text-sm md:text-base">
+                Convert <strong>DOC to PDF</strong> and <strong>DOCX to PDF</strong> online - 100% free, no registration required
+              </p>
+              <p className="text-gray-500 text-xs md:text-sm mt-2">
+                Supports: Microsoft Word (.doc, .docx) • Preserves formatting • Secure processing
+              </p>
             </div>
-          </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
-              <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <div className="font-medium">Conversion Error</div>
-                <div className="text-sm mt-1">{error}</div>
-              </div>
-            </div>
-          )}
-
-          {/* Success Message */}
-          {success && (
-            <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
-              <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <div className="font-medium">Conversion successful!</div>
-                <div className="text-sm mt-1">
-                  PDF is ready to download.
-                  {conversionTime && (
-                    <span className="ml-2">Processed in {formatTime(conversionTime)}</span>
+            {/* File Upload */}
+            <div className="mb-8">
+              <div
+                className={`border-3 border-dashed rounded-2xl transition-all duration-300 cursor-pointer ${
+                  file ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-blue-300 hover:bg-blue-50'
+                }`}
+                onClick={() => document.getElementById('file-input')?.click()}
+              >
+                <div className="text-center py-8 md:py-12">
+                  <input
+                    id="file-input"
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".doc,.docx"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    aria-label="Upload Word document"
+                  />
+                  
+                  {file ? (
+                    <div>
+                      <div className="flex items-center justify-center mb-2">
+                        <FileText className="w-5 h-5 text-green-600 mr-2" />
+                        <div className="text-green-600 font-semibold text-lg truncate max-w-xs">{file.name}</div>
+                      </div>
+                      <div className="text-gray-500 text-sm">
+                        {formatFileSize(file.size)} • Ready to convert
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          document.getElementById('file-input')?.click();
+                        }}
+                        className="text-blue-600 font-medium mt-4 hover:text-blue-800 text-sm"
+                      >
+                        Choose different file
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="text-blue-600 font-semibold text-lg mb-2">Select a Word file</div>
+                      <div className="text-gray-500">Click to browse or drag and drop</div>
+                      <div className="text-gray-400 text-sm mt-2">
+                        Supports: <strong>.doc</strong>, <strong>.docx</strong> • No file size limit • 100% secure
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
             </div>
-          )}
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-8">
-            <button
-              onClick={convertToPDF}
-              disabled={!file || converting || !html2canvas}
-              className={`flex-1 px-6 py-4 font-medium rounded-lg transition-all flex items-center justify-center ${
-                !file || converting || !html2canvas
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:shadow-lg hover:scale-[1.02] shadow-md'
-              }`}
-            >
-              {converting ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Converting...
-                </>
-              ) : !html2canvas ? (
-                'Loading converter...'
-              ) : (
-                'Convert to PDF'
-              )}
-            </button>
-            
-            {success && pdfBlob && (
-              <button
-                onClick={handleDownload}
-                className="flex-1 px-6 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
-              >
-                <Download className="w-5 h-5 mr-2" />
-                Download PDF
-              </button>
-            )}
-            
-            <button
-              onClick={handleReset}
-              className="px-6 py-4 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center"
-            >
-              Reset
-            </button>
-          </div>
-
-          {/* Conversion Details */}
-          {success && pdfBlob && (
-            <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl border border-blue-200">
-              <div className="flex flex-col sm:flex-row items-center justify-between">
-                <div className="flex items-center mb-4 sm:mb-0">
-                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mr-4 shadow-sm">
-                    <FileText className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900 truncate max-w-xs">
-                      {file?.name.replace(/\.[^/.]+$/, '')}.pdf
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {formatFileSize(pdfBlob.size)} • Ready to download
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <button
-                    onClick={() => {
-                      if (downloadUrl) {
-                        window.open(downloadUrl, '_blank');
-                      }
-                    }}
-                    className="flex items-center justify-center bg-blue-50 text-blue-600 border border-blue-200 px-6 py-3 rounded-lg hover:bg-blue-100 transition-all"
-                  >
-                    Preview
-                  </button>
-                  <button
-                    onClick={handleDownload}
-                    className="flex items-center justify-center bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-800 transition-all shadow-lg hover:shadow-xl"
-                  >
-                    <Download className="w-5 h-5 mr-2" />
-                    Download PDF
-                  </button>
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
+                <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="font-medium">Conversion Error</div>
+                  <div className="text-sm mt-1">{error}</div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Features */}
-          <div className="mt-10 pt-8 border-t">
-            <h3 className="text-lg font-semibold mb-4">Features</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <ul className="space-y-2 text-sm text-green-700">
-                  <li className="flex items-start">
-                    <span className="mr-2">✓</span>
-                    <span>Preserves images and diagrams</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="mr-2">✓</span>
-                    <span>Maintains tables and borders</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="mr-2">✓</span>
-                    <span>Keeps basic text formatting</span>
-                  </li>
-                </ul>
+            {/* Success Message */}
+            {success && (
+              <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
+                <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="font-medium">Conversion successful!</div>
+                  <div className="text-sm mt-1">
+                    PDF is ready to download.
+                    {conversionTime && (
+                      <span className="ml-2">Processed in {formatTime(conversionTime)}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <button
+                onClick={convertToPDF}
+                disabled={!file || converting || !html2canvas}
+                className={`flex-1 px-6 py-4 font-medium rounded-lg transition-all flex items-center justify-center ${
+                  !file || converting || !html2canvas
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:shadow-lg hover:scale-[1.02] shadow-md'
+                }`}
+                aria-label="Convert Word to PDF"
+              >
+                {converting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Converting...
+                  </>
+                ) : !html2canvas ? (
+                  'Loading converter...'
+                ) : (
+                  'Convert to PDF'
+                )}
+              </button>
+              
+              {success && pdfBlob && (
+                <button
+                  onClick={handleDownload}
+                  className="flex-1 px-6 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
+                  aria-label="Download PDF"
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  Download PDF
+                </button>
+              )}
+              
+              <button
+                onClick={handleReset}
+                className="px-6 py-4 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center"
+                aria-label="Reset converter"
+              >
+                Reset
+              </button>
+            </div>
+
+            {/* Conversion Details */}
+            {success && pdfBlob && (
+              <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl border border-blue-200">
+                <div className="flex flex-col sm:flex-row items-center justify-between">
+                  <div className="flex items-center mb-4 sm:mb-0">
+                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mr-4 shadow-sm">
+                      <FileText className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900 truncate max-w-xs">
+                        {file?.name.replace(/\.[^/.]+$/, '')}.pdf
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {formatFileSize(pdfBlob.size)} • Ready to download
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={() => {
+                        if (downloadUrl) {
+                          window.open(downloadUrl, '_blank');
+                        }
+                      }}
+                      className="flex items-center justify-center bg-blue-50 text-blue-600 border border-blue-200 px-6 py-3 rounded-lg hover:bg-blue-100 transition-all"
+                    >
+                      Preview
+                    </button>
+                    <button
+                      onClick={handleDownload}
+                      className="flex items-center justify-center bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-800 transition-all shadow-lg hover:shadow-xl"
+                    >
+                      <Download className="w-5 h-5 mr-2" />
+                      Download PDF
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Features with SEO Keywords */}
+            <div className="mt-10 pt-8 border-t">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Why Use Our Word to PDF Converter?</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="p-6 bg-green-50 border border-green-200 rounded-xl">
+                  <h3 className="font-semibold text-green-800 mb-3">🔒 Secure & Private</h3>
+                  <ul className="space-y-3 text-sm text-green-700">
+                    <li className="flex items-start">
+                      <span className="mr-2">✓</span>
+                      <span><strong>100% browser-based</strong> - Files never leave your computer</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">✓</span>
+                      <span><strong>No uploads to servers</strong> - Complete privacy guaranteed</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">✓</span>
+                      <span><strong>Automatic deletion</strong> - Files removed after conversion</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="p-6 bg-blue-50 border border-blue-200 rounded-xl">
+                  <h3 className="font-semibold text-blue-800 mb-3">⚡ Fast & Reliable</h3>
+                  <ul className="space-y-3 text-sm text-blue-700">
+                    <li className="flex items-start">
+                      <span className="mr-2">✓</span>
+                      <span><strong>No file size limits</strong> - Convert documents of any size</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">✓</span>
+                      <span><strong>Preserves formatting</strong> - Maintains original layout and design</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">✓</span>
+                      <span><strong>No registration required</strong> - Convert instantly, no sign-up</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
               
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <ul className="space-y-2 text-sm text-blue-700">
-                  <li className="flex items-start">
-                    <span className="mr-2">✓</span>
-                    <span>Works entirely in your browser</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="mr-2">✓</span>
-                    <span>No file size limits</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="mr-2">✓</span>
-                    <span>Files never leave your computer</span>
-                  </li>
-                </ul>
+              {/* SEO Content Section */}
+              <div className="mt-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-4">About Word to PDF Conversion</h3>
+                <div className="text-sm text-gray-700 space-y-3">
+                  <p>
+                    <strong>Convert DOC to PDF</strong> and <strong>DOCX to PDF</strong> files easily with our free online converter. 
+                    Whether you need to convert Microsoft Word documents for sharing, printing, or archiving, 
+                    our tool preserves all formatting including fonts, images, tables, and layouts.
+                  </p>
+                  <p>
+                    Our <strong>Word to PDF converter</strong> is perfect for students, professionals, and businesses 
+                    who need to create PDF versions of their documents. Unlike other converters, 
+                    we process everything directly in your browser for maximum security and privacy.
+                  </p>
+                  <p>
+                    <strong>Features include:</strong> Convert Word to PDF online free, preserve document formatting, 
+                    no file size restrictions, 100% secure processing, no watermarks, and instant downloads.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Hidden container for temp conversion */}
-          <div ref={tempContainerRef} className="hidden"></div>
+            {/* FAQ Section for SEO */}
+            <div className="mt-10 pt-8 border-t">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+              <div className="space-y-6">
+                <div className="border border-gray-200 rounded-lg p-5">
+                  <h3 className="font-semibold text-gray-900 mb-2">Is this Word to PDF converter really free?</h3>
+                  <p className="text-gray-600 text-sm">
+                    Yes! Our Word to PDF converter is completely free with no hidden costs, watermarks, 
+                    or registration required. You can convert unlimited Word documents to PDF format.
+                  </p>
+                </div>
+                <div className="border border-gray-200 rounded-lg p-5">
+                  <h3 className="font-semibold text-gray-900 mb-2">What Word formats do you support?</h3>
+                  <p className="text-gray-600 text-sm">
+                    We support both .doc (older Word format) and .docx (modern Word format). 
+                    Our converter handles all versions of Microsoft Word documents.
+                  </p>
+                </div>
+                <div className="border border-gray-200 rounded-lg p-5">
+                  <h3 className="font-semibold text-gray-900 mb-2">Are my documents secure?</h3>
+                  <p className="text-gray-600 text-sm">
+                    100% secure. All conversion happens directly in your browser. 
+                    Your Word documents never leave your computer or get uploaded to any servers.
+                  </p>
+                </div>
+                <div className="border border-gray-200 rounded-lg p-5">
+                  <h3 className="font-semibold text-gray-900 mb-2">Does it preserve formatting?</h3>
+                  <p className="text-gray-600 text-sm">
+                    Yes! Our converter maintains images, tables, fonts, and layout from your original 
+                    Word document. The resulting PDF will look identical to your original file.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Hidden container for temp conversion */}
+            <div ref={tempContainerRef} className="hidden"></div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

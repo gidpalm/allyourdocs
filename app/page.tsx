@@ -10,7 +10,7 @@ export default function Home() {
     { title: "Images to PDF", description: "Convert multiple images to a PDF document", icon: Image, path: "/image-to-pdf", color: "bg-pink-50 border-pink-100", iconColor: "text-pink-600" },
     { title: "Compress PDF", description: "Reduce PDF file size without losing quality", icon: Minus, path: "/compress-pdf", color: "bg-red-50 border-red-100", iconColor: "text-red-600" },
     { title: "Image to Text (OCR)", description: "Extract text from images using OCR", icon: Type, path: "/image-to-text", color: "bg-indigo-50 border-indigo-100", iconColor: "text-indigo-600" },
-    { title: "PDF to Text", description: "Extract text from PDF documents", icon: File, path: "/pdf-text", color: "bg-teal-50 border-teal-100", iconColor: "text-teal-600" },
+    { title: "PDF to Text", description: "Extract text from PDF documents", icon: File, path: "/pdf-to-text", color: "bg-teal-50 border-teal-100", iconColor: "text-teal-600" },
     { title: "Rearrange PDF", description: "Reorder PDF pages as needed", icon: RefreshCw, path: "/rearrange-pdf", color: "bg-orange-50 border-orange-100", iconColor: "text-orange-600" },
   ]
 
@@ -101,7 +101,7 @@ export default function Home() {
                 <Settings className="w-8 h-8 text-green-400" />
               </div>
               <h3 className="text-xl font-semibold mb-2">2. Process Instantly</h3>
-              <p className="text-gray-300">Our system processes your file securely in the cloud</p>
+              <p className="text-gray-300">Our system processes your file securely in the your browser</p>
             </div>
             <div className="text-center">
               <div className="bg-purple-500/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">

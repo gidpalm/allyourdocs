@@ -21,7 +21,7 @@ export default function Home() {
         <div className="relative max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              AllYourDocs <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Pro</span>
+              AllYourDocs <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-yellow-600">Pro</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
               Your all-in-one document processing solution. Convert, merge, split, and optimize your documents with ease. No sign up, No account required.
@@ -101,7 +101,7 @@ export default function Home() {
                 <Settings className="w-8 h-8 text-green-400" />
               </div>
               <h3 className="text-xl font-semibold mb-2">2. Process Instantly</h3>
-              <p className="text-gray-300">Our system processes your file securely in the your browser</p>
+              <p className="text-gray-300">Our system processes your file securely in your browser</p>
             </div>
             <div className="text-center">
               <div className="bg-purple-500/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">

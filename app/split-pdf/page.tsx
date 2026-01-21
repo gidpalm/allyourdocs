@@ -358,14 +358,10 @@ export default function SplitPDF() {
             <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Scissors className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">Split PDF</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">Split PDF Free</h1>
             <p className="text-gray-600">
               Split PDF documents into multiple PDF files by page ranges
             </p>
-            <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-              <div className="w-2 h-2 rounded-full bg-purple-600 mr-2"></div>
-              Client-Side • 100% Private
-            </div>
           </div>
 
           {/* PDF Library Loading */}

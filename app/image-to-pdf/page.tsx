@@ -425,10 +425,6 @@ export default function ImageToPDF() {
             <p className="text-gray-600">
               Convert multiple images into a single PDF document
             </p>
-            <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-pink-100 text-pink-800">
-              <div className="w-2 h-2 rounded-full bg-pink-600 mr-2"></div>
-              Client-Side • 100% Private
-            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

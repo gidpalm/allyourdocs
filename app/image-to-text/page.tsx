@@ -19,14 +19,12 @@ import {
   RotateCw,
   Maximize2,
   Minimize2,
-  Languages,
   FileCode,
-  Shield,
-  Globe,
   Brain,
-  Battery,
-  Clock,
-  Zap
+  Zap,
+  Table,
+  Layout,
+  Clock
 } from "lucide-react";
 import { createWorker } from 'tesseract.js';
 
@@ -70,9 +68,9 @@ export default function ImageToText() {
   const [currentProcessingImage, setCurrentProcessingImage] = useState<string>("");
   const [settings, setSettings] = useState<OCRSettings>({
     language: "eng",
-    preserveFormatting: true,
+    preserveFormatting: false,
     includeConfidence: false,
-    pageSegmentation: 'auto',
+    pageSegmentation: 'single_block',
     useMultiLang: false,
   });
   const [isEngineReady, setIsEngineReady] = useState(false);
@@ -82,90 +80,96 @@ export default function ImageToText() {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const workerRef = useRef<Tesseract.Worker | null>(null);
 
-  // Language options for Tesseract.js
   const languageOptions = [
-    { code: "eng", name: "English", icon: "🇬🇧", lang: "English" },
-    { code: "spa", name: "Spanish", icon: "🇪🇸", lang: "Español" },
-    { code: "fra", name: "French", icon: "🇫🇷", lang: "Français" },
-    { code: "deu", name: "German", icon: "🇩🇪", lang: "Deutsch" },
-    { code: "ita", name: "Italian", icon: "🇮🇹", lang: "Italiano" },
-    { code: "por", name: "Portuguese", icon: "🇵🇹", lang: "Português" },
-    { code: "rus", name: "Russian", icon: "🇷🇺", lang: "Русский" },
-    { code: "chi_sim", name: "Chinese Simplified", icon: "🇨🇳", lang: "中文" },
-    { code: "jpn", name: "Japanese", icon: "🇯🇵", lang: "日本語" },
-    { code: "kor", name: "Korean", icon: "🇰🇷", lang: "한국어" },
-    { code: "ara", name: "Arabic", icon: "🇸🇦", lang: "العربية" },
-    { code: "hin", name: "Hindi", icon: "🇮🇳", lang: "हिन्दी" },
+    { code: "eng", name: "English", icon: "🇬🇧" },
+    { code: "spa", name: "Spanish", icon: "🇪🇸" },
+    { code: "fra", name: "French", icon: "🇫🇷" },
+    { code: "deu", name: "German", icon: "🇩🇪" },
+    { code: "ita", name: "Italian", icon: "🇮🇹" },
+    { code: "por", name: "Portuguese", icon: "🇵🇹" },
+    { code: "rus", name: "Russian", icon: "🇷🇺" },
+    { code: "chi_sim", name: "Chinese Simplified", icon: "🇨🇳" },
+    { code: "jpn", name: "Japanese", icon: "🇯🇵" },
+    { code: "kor", name: "Korean", icon: "🇰🇷" },
+    { code: "ara", name: "Arabic", icon: "🇸🇦" },
+    { code: "hin", name: "Hindi", icon: "🇮🇳" },
   ];
 
-  // Multi-language combinations for common scenarios
   const multiLanguageOptions = [
-    { code: "eng+spa", name: "English + Spanish", icon: "🇬🇧🇪🇸", description: "For bilingual documents" },
-    { code: "eng+fra", name: "English + French", icon: "🇬🇧🇫🇷", description: "For bilingual documents" },
-    { code: "eng+deu", name: "English + German", icon: "🇬🇧🇩🇪", description: "For bilingual documents" },
-    { code: "eng+chi_sim", name: "English + Chinese", icon: "🇬🇧🇨🇳", description: "For bilingual documents" },
-    { code: "eng+jpn", name: "English + Japanese", icon: "🇬🇧🇯🇵", description: "For bilingual documents" },
-    { code: "eng+ara", name: "English + Arabic", icon: "🇬🇧🇸🇦", description: "For bilingual documents" },
-    { code: "spa+fra", name: "Spanish + French", icon: "🇪🇸🇫🇷", description: "For multilingual documents" },
-    { code: "deu+fra", name: "German + French", icon: "🇩🇪🇫🇷", description: "For multilingual documents" },
+    { code: "eng+spa", name: "English + Spanish", icon: "🇬🇧🇪🇸" },
+    { code: "eng+fra", name: "English + French", icon: "🇬🇧🇫🇷" },
+    { code: "eng+deu", name: "English + German", icon: "🇬🇧🇩🇪" },
+    { code: "eng+chi_sim", name: "English + Chinese", icon: "🇬🇧🇨🇳" },
+    { code: "eng+jpn", name: "English + Japanese", icon: "🇬🇧🇯🇵" },
+    { code: "eng+ara", name: "English + Arabic", icon: "🇬🇧🇸🇦" },
+    { code: "spa+fra", name: "Spanish + French", icon: "🇪🇸🇫🇷" },
+    { code: "deu+fra", name: "German + French", icon: "🇩🇪🇫🇷" },
   ];
 
   const pageSegmentationOptions = [
-    { value: 'auto', label: 'Auto (OSD)', description: 'Automatic page segmentation with orientation detection' },
     { value: 'single_block', label: 'Single Block', description: 'Treat image as single text block' },
     { value: 'single_line', label: 'Single Line', description: 'Treat image as single text line' },
-    { value: 'sparse_text', label: 'Sparse Text', description: 'Find as much text as possible in no particular order' },
+    { value: 'sparse_text', label: 'Sparse Text', description: 'Find as much text as possible' },
+    { value: 'auto', label: 'Auto', description: 'Automatic page segmentation' },
   ];
 
-  // Initialize Tesseract.js worker on component mount
   useEffect(() => {
+    let mounted = true;
+    
     const initializeOCR = async () => {
       try {
-        console.log("Initializing Tesseract.js OCR engine...");
-        
-        // Track loading progress manually
         const loadingInterval = setInterval(() => {
-          setEngineLoadProgress(prev => {
-            if (prev >= 90) {
-              clearInterval(loadingInterval);
-              return 90;
-            }
-            return prev + 10;
-          });
+          if (mounted) {
+            setEngineLoadProgress(prev => {
+              if (prev >= 90) {
+                clearInterval(loadingInterval);
+                return 90;
+              }
+              return prev + 10;
+            });
+          }
         }, 300);
 
         try {
-          console.log("Creating Tesseract.js worker...");
-          
-          // Create worker with English language (default)
+          // Create worker with English language
           const worker = await createWorker('eng');
-          workerRef.current = worker;
           
-          console.log("Worker created successfully");
-          
-          clearInterval(loadingInterval);
-          setEngineLoadProgress(100);
-          setIsEngineReady(true);
-          console.log("OCR engine ready");
+          if (mounted) {
+            workerRef.current = worker;
+            clearInterval(loadingInterval);
+            setEngineLoadProgress(100);
+            setIsEngineReady(true);
+          } else {
+            worker.terminate();
+          }
         } catch (loadError: any) {
-          console.error("Failed to create worker:", loadError);
-          setError(`Failed to initialize OCR engine: ${loadError.message}. Please refresh the page.`);
+          if (mounted) {
+            // Fallback: Try without specifying language
+            try {
+              const worker = await createWorker();
+              workerRef.current = worker;
+              clearInterval(loadingInterval);
+              setEngineLoadProgress(100);
+              setIsEngineReady(true);
+            } catch (fallbackError: any) {
+              setError(`OCR engine failed to load. Please refresh the page.`);
+            }
+          }
         }
         
       } catch (err: any) {
-        console.error("Failed to initialize OCR engine:", err);
-        setError(`Failed to initialize OCR engine: ${err.message}. Please refresh the page.`);
+        if (mounted) {
+          setError(`Failed to initialize OCR engine`);
+        }
       }
     };
 
     initializeOCR();
 
-    // Cleanup worker on component unmount
     return () => {
+      mounted = false;
       if (workerRef.current) {
-        workerRef.current.terminate().then(() => {
-          console.log("Tesseract.js worker terminated");
-        });
+        workerRef.current.terminate();
       }
     };
   }, []);
@@ -174,7 +178,6 @@ export default function ImageToText() {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    // Filter for image files
     const imageFiles = files.filter(file => 
       file.type.startsWith('image/') || 
       ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff', 'tif'].some(ext => 
@@ -188,11 +191,10 @@ export default function ImageToText() {
     }
 
     if (imageFiles.length > 10) {
-      setError("Maximum 10 images allowed for OCR processing");
+      setError("Maximum 10 images allowed");
       return;
     }
 
-    // Check total size
     const totalSize = imageFiles.reduce((sum, file) => sum + file.size, 0);
     if (totalSize > 50 * 1024 * 1024) {
       setError("Total file size exceeds 50MB limit");
@@ -205,7 +207,6 @@ export default function ImageToText() {
     setCombinedText("");
     setOverallProgress(0);
 
-    // Create image objects with previews
     const newImages: ImageFile[] = [];
     
     for (const file of imageFiles) {
@@ -250,7 +251,6 @@ export default function ImageToText() {
       URL.revokeObjectURL(imageToRemove.preview);
     }
     setImages(images.filter(img => img.id !== id));
-    // Remove corresponding result if exists
     const index = images.findIndex(img => img.id === id);
     if (index !== -1 && results[index]) {
       const newResults = [...results];
@@ -269,58 +269,38 @@ export default function ImageToText() {
     }
 
     const startTime = performance.now();
-    let progress = 0;
     
     try {
       setCurrentProcessingImage(image.name);
       
-      // Set up progress monitoring
       const progressInterval = setInterval(() => {
-        progress = Math.min(progress + 5, 90);
-        setCurrentImageProgress(progress);
+        setCurrentImageProgress(prev => Math.min(prev + 5, 90));
       }, 100);
 
-      // Determine the language to use
       let languageToUse = settings.language;
       
-      // If multi-language mode is enabled, use the combined language string
-      if (settings.useMultiLang) {
-        languageToUse = settings.language;
+      // For multi-language, we'll use the first language for now
+      if (settings.useMultiLang && languageToUse.includes('+')) {
+        languageToUse = languageToUse.split('+')[0];
       }
 
-      // Recreate worker if language changed or multi-language mode
-      if (languageToUse !== 'eng' || settings.useMultiLang) {
-        console.log(`Switching to language: ${languageToUse}`);
+      // If language changed, recreate worker
+      if (languageToUse !== 'eng') {
         await workerRef.current.terminate();
-        
-        // For multi-language, we need to handle it differently
-        if (settings.useMultiLang && languageToUse.includes('+')) {
-          // For multi-language, create with first language and load additional
-          const langs = languageToUse.split('+');
-          const worker = await createWorker(langs[0]);
-          for (let i = 1; i < langs.length; i++) {
-            await worker.loadLanguage(langs[i]);
-          }
-          await worker.initialize(langs.join('+'));
-          workerRef.current = worker;
-        } else {
-          // Single language
-          const worker = await createWorker(languageToUse);
-          workerRef.current = worker;
-        }
+        const worker = await createWorker(languageToUse);
+        workerRef.current = worker;
       }
 
-      // Set parameters for best document structure preservation
+      // Set parameters for text extraction
       await workerRef.current.setParameters({
-        tessedit_pageseg_mode: settings.pageSegmentation === 'single_block' ? 6 : 
-                              settings.pageSegmentation === 'single_line' ? 7 :
-                              settings.pageSegmentation === 'sparse_text' ? 11 : 3, // 3 = AUTO_OSD
-        preserve_interword_spaces: settings.preserveFormatting ? '1' : '0',
-        tessedit_char_whitelist: '', // Allow all characters
-        tessedit_ocr_engine_mode: 3, // Default + LSTM mode
+        tessedit_pageseg_mode: settings.pageSegmentation === 'single_line' ? 7 :
+                              settings.pageSegmentation === 'sparse_text' ? 11 :
+                              settings.pageSegmentation === 'auto' ? 3 : 6,
+        preserve_interword_spaces: '0',
+        tessedit_char_whitelist: '',
+        tessedit_ocr_engine_mode: 3,
       });
 
-      // Perform OCR
       const result = await workerRef.current.recognize(image.file);
 
       clearInterval(progressInterval);
@@ -328,17 +308,30 @@ export default function ImageToText() {
 
       const processingTime = Math.round(performance.now() - startTime);
       
+      let cleanedText = result.data.text;
+      
+      cleanedText = cleanedText
+        .replace(/\|/g, ' ')      
+        .replace(/\+/g, ' ')      
+        .replace(/-{2,}/g, ' ')   
+        .replace(/\n\s*\n/g, '\n')
+        .replace(/\s+/g, ' ')     
+        .trim();
+      
+      const sentences = cleanedText.split(/(?<=[.!?])\s+/);
+      cleanedText = sentences.join(' ');
+      
       return {
-        text: result.data.text,
+        text: cleanedText,
         confidence: result.data.confidence,
-        language: settings.useMultiLang ? getMultiLanguageName(languageToUse) : getLanguageName(languageToUse),
+        language: getLanguageName(languageToUse),
         processingTime,
         pageInfo: `Image ${index + 1} of ${total}`,
       };
       
     } catch (err: any) {
       console.error(`Error processing ${image.name}:`, err);
-      throw new Error(`Failed to process ${image.name}: ${err.message}`);
+      throw new Error(`Failed to process ${image.name}`);
     } finally {
       setCurrentImageProgress(0);
       setCurrentProcessingImage("");
@@ -354,7 +347,7 @@ export default function ImageToText() {
     }
 
     if (!isEngineReady) {
-      setError("OCR engine is still loading. Please wait...");
+      setError("OCR engine is still loading");
       return;
     }
 
@@ -370,20 +363,16 @@ export default function ImageToText() {
       const allResults: OCRResult[] = [];
       let combinedText = "";
       
-      // Process images sequentially
       for (let i = 0; i < images.length; i++) {
         try {
-          // Update overall progress
           const newProgress = Math.round((i / images.length) * 100);
           setOverallProgress(newProgress);
           
           const result = await processSingleImage(images[i], i, images.length);
           allResults.push(result);
           
-          // Build combined text WITHOUT headers - just the extracted text
           combinedText += result.text;
           
-          // Add spacing between images if not the last one
           if (i < images.length - 1) {
             combinedText += "\n\n";
           }
@@ -394,7 +383,7 @@ export default function ImageToText() {
           const errorResult: OCRResult = {
             text: `ERROR: ${err.message}`,
             confidence: 0,
-            language: settings.useMultiLang ? getMultiLanguageName(settings.language) : getLanguageName(settings.language),
+            language: settings.useMultiLang ? "Multi-language" : getLanguageName(settings.language),
             processingTime: 0,
             pageInfo: `Image ${i + 1} of ${images.length}`,
           };
@@ -415,7 +404,7 @@ export default function ImageToText() {
       
     } catch (err: any) {
       console.error("OCR processing error:", err);
-      setError(err.message || "Failed to extract text from images. Please try again.");
+      setError(err.message || "Failed to extract text from images");
     } finally {
       setUploading(false);
       setOverallProgress(0);
@@ -443,7 +432,7 @@ export default function ImageToText() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `extracted_text_${new Date().getTime()}.txt`;
+    link.download = `extracted_text_${Date.now()}.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -475,7 +464,7 @@ export default function ImageToText() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `ocr_results_${new Date().getTime()}.json`;
+    link.download = `ocr_results_${Date.now()}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -501,7 +490,6 @@ export default function ImageToText() {
   };
 
   const handleReset = () => {
-    // Clean up all preview URLs
     images.forEach(image => URL.revokeObjectURL(image.preview));
     
     setImages([]);
@@ -561,14 +549,13 @@ export default function ImageToText() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 py-12">
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Header */}
           <div className="text-center mb-10">
             <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Brain className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-3">Image to Text Converter (OCR)</h1>
             <p className="text-gray-600">
-              Extract text from images while preserving original document structure
+              Extract clean text from images - Tables converted to sentences
             </p>
             <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-800">
               <div className="w-2 h-2 rounded-full bg-green-600 mr-2 animate-pulse"></div>
@@ -576,7 +563,6 @@ export default function ImageToText() {
             </div>
           </div>
 
-          {/* Engine Loading Indicator */}
           {!isEngineReady && (
             <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
               <div className="flex items-center">
@@ -584,7 +570,7 @@ export default function ImageToText() {
                 <div className="flex-1">
                   <h3 className="font-semibold text-blue-800 mb-2">Loading Tesseract.js OCR Engine</h3>
                   <p className="text-sm text-blue-700 mb-3">
-                    Downloading OCR engine and language data. This only happens once.
+                    Downloading OCR engine and language data
                   </p>
                   <div className="w-full bg-blue-200 rounded-full h-2">
                     <div 
@@ -601,9 +587,7 @@ export default function ImageToText() {
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Upload & Preview */}
             <div className="lg:col-span-2">
-              {/* File Upload Area */}
               <div
                 className={`border-3 border-dashed rounded-2xl transition-all duration-300 cursor-pointer mb-6 ${
                   images.length > 0 
@@ -664,7 +648,6 @@ export default function ImageToText() {
                 </div>
               </div>
 
-              {/* Image Preview */}
               {images.length > 0 && (
                 <div className="mb-8">
                   <div className="flex items-center justify-between mb-4">
@@ -724,7 +707,6 @@ export default function ImageToText() {
                               )}
                             </div>
                             
-                            {/* Remove button */}
                             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button
                                 onClick={() => removeImage(image.id)}
@@ -734,7 +716,6 @@ export default function ImageToText() {
                               </button>
                             </div>
                             
-                            {/* Image number */}
                             <div className="absolute top-2 left-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-lg font-semibold">
                               {index + 1}
                             </div>
@@ -744,7 +725,6 @@ export default function ImageToText() {
                     </div>
                   )}
 
-                  {/* Image List (Compact View) */}
                   {!showPreview && (
                     <div className="space-y-3">
                       {images.map((image, index) => (
@@ -796,7 +776,6 @@ export default function ImageToText() {
                 </div>
               )}
 
-              {/* OCR Progress */}
               {(uploading || currentProcessingImage) && (
                 <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
                   <h4 className="font-semibold text-blue-800 mb-4 flex items-center">
@@ -838,15 +817,15 @@ export default function ImageToText() {
                       <ul className="space-y-1 text-xs">
                         <li className="flex items-start">
                           <span className="text-blue-500 mr-2">•</span>
-                          <span>Preserving original document structure and formatting</span>
+                          <span>Extracting text without table structure</span>
                         </li>
                         <li className="flex items-start">
                           <span className="text-blue-500 mr-2">•</span>
-                          <span>{settings.useMultiLang ? 'Multi-language mode' : 'Single language mode'}</span>
+                          <span>Converting tables to flowing text</span>
                         </li>
                         <li className="flex items-start">
                           <span className="text-blue-500 mr-2">•</span>
-                          <span>Processing 100% locally in your browser</span>
+                          <span>Preserving sentence structure</span>
                         </li>
                       </ul>
                     </div>
@@ -855,9 +834,7 @@ export default function ImageToText() {
               )}
             </div>
 
-            {/* Right Column - Settings & Actions */}
             <div className="lg:col-span-1">
-              {/* OCR Settings */}
               <div className="bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 mb-6 border border-gray-200 shadow-sm">
                 <h3 className="text-lg font-semibold mb-6 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
@@ -865,7 +842,6 @@ export default function ImageToText() {
                 </h3>
                 
                 <div className="space-y-6">
-                  {/* Multi-language Toggle */}
                   <div className="mb-4">
                     <label className="flex items-center space-x-3 cursor-pointer p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200">
                       <input
@@ -883,11 +859,10 @@ export default function ImageToText() {
                       </div>
                     </label>
                     <div className="text-xs text-gray-600 mt-2 pl-10">
-                      Enable this for documents with multiple languages or unknown languages
+                      Enable this for documents with multiple languages
                     </div>
                   </div>
                   
-                  {/* Language Selection */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
                       {settings.useMultiLang ? 'Language Combination' : 'Language'}
@@ -927,29 +902,31 @@ export default function ImageToText() {
                       <span>
                         {settings.useMultiLang ? getMultiLanguageName(settings.language) : getLanguageName(settings.language)}
                       </span>
-                      {settings.useMultiLang && multiLanguageOptions.find(l => l.code === settings.language)?.description && (
-                        <span className="ml-2 text-gray-400">
-                          • {multiLanguageOptions.find(l => l.code === settings.language)?.description}
-                        </span>
-                      )}
                     </div>
                   </div>
                   
-                  {/* Advanced Options */}
-                  <div className="space-y-4">
-                    <label className="flex items-center space-x-3 cursor-pointer p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <input
-                        type="checkbox"
-                        checked={settings.preserveFormatting}
-                        onChange={(e) => updateSetting('preserveFormatting', e.target.checked)}
-                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                        disabled={uploading}
-                      />
-                      <span className="text-sm text-gray-700">
-                        Preserve document structure
-                      </span>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Page Segmentation Mode
                     </label>
-                    
+                    <select
+                      value={settings.pageSegmentation}
+                      onChange={(e) => updateSetting('pageSegmentation', e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      disabled={uploading}
+                    >
+                      {pageSegmentationOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="text-xs text-gray-500 mt-2">
+                      {pageSegmentationOptions.find(o => o.value === settings.pageSegmentation)?.description}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
                     <label className="flex items-center space-x-3 cursor-pointer p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                       <input
                         type="checkbox"
@@ -964,25 +941,24 @@ export default function ImageToText() {
                     </label>
                   </div>
                   
-                  {/* Tips for Unknown Languages */}
                   <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
                     <div className="text-sm text-amber-800">
                       <div className="font-medium mb-2 flex items-center">
-                        <Globe className="w-4 h-4 mr-2" />
-                        Tips for unknown languages:
+                        <Table className="w-4 h-4 mr-2" />
+                        Table Extraction Mode:
                       </div>
                       <ul className="space-y-1 text-xs">
                         <li className="flex items-start">
                           <span className="text-amber-500 mr-2">•</span>
-                          <span>Use <strong>Multi-language Mode</strong> with language combinations</span>
+                          <span>Tables are converted to flowing text</span>
                         </li>
                         <li className="flex items-start">
                           <span className="text-amber-500 mr-2">•</span>
-                          <span>Try <strong>English + Spanish</strong> for Latin script languages</span>
+                          <span>Cell content is extracted as sentences</span>
                         </li>
                         <li className="flex items-start">
                           <span className="text-amber-500 mr-2">•</span>
-                          <span>For Asian languages, use appropriate combinations</span>
+                          <span>Table structure is intentionally ignored</span>
                         </li>
                       </ul>
                     </div>
@@ -990,7 +966,6 @@ export default function ImageToText() {
                 </div>
               </div>
 
-              {/* Error Message */}
               {error && (
                 <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
                   <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
@@ -1007,7 +982,6 @@ export default function ImageToText() {
                 </div>
               )}
 
-              {/* Success Message */}
               {success && (
                 <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
                   <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
@@ -1020,7 +994,6 @@ export default function ImageToText() {
                 </div>
               )}
 
-              {/* Action Buttons */}
               <div className="space-y-4">
                 <button
                   onClick={handleSubmit}
@@ -1114,7 +1087,6 @@ export default function ImageToText() {
                 </button>
               </div>
 
-              {/* Statistics */}
               {images.length > 0 && (
                 <div className="mt-6 p-5 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
                   <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
@@ -1165,7 +1137,6 @@ export default function ImageToText() {
             </div>
           </div>
 
-          {/* Extracted Text Display */}
           {combinedText && (
             <div className={`mt-8 ${fullscreenText ? 'fixed inset-0 z-50 bg-white p-4 overflow-auto' : ''}`}>
               {fullscreenText && (
@@ -1183,6 +1154,10 @@ export default function ImageToText() {
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                   <FileText className="w-5 h-5 mr-2 text-blue-600" />
                   Extracted Text
+                  <span className="ml-2 px-2 py-1 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 text-xs font-medium rounded-full flex items-center">
+                    <Layout className="w-3 h-3 mr-1" />
+                    Table-free text
+                  </span>
                 </h3>
                 <div className="text-sm text-gray-500 flex items-center">
                   <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium mr-2">
@@ -1205,14 +1180,13 @@ export default function ImageToText() {
                   ref={textAreaRef}
                   value={combinedText}
                   readOnly
-                  className={`w-full bg-white p-4 font-mono text-sm focus:outline-none resize-none ${
+                  className={`w-full bg-white p-4 font-sans text-base leading-relaxed focus:outline-none resize-none ${
                     fullscreenText ? 'h-full' : 'h-96'
                   }`}
                   spellCheck={false}
                 />
               </div>
               
-              {/* Individual Results */}
               {results.length > 1 && (
                 <div className="mt-8">
                   <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -1248,7 +1222,7 @@ export default function ImageToText() {
                           </div>
                         </div>
                         <div className="p-4 max-h-48 overflow-y-auto">
-                          <pre className="text-sm whitespace-pre-wrap font-mono text-gray-700 leading-relaxed">
+                          <pre className="text-sm whitespace-pre-wrap font-sans text-gray-700 leading-relaxed">
                             {result.text || "No text extracted"}
                           </pre>
                         </div>
@@ -1260,7 +1234,6 @@ export default function ImageToText() {
             </div>
           )}
 
-          {/* Simple Footer */}
           <div className="mt-8 pt-6 border-t border-gray-200 text-center">
             <Link
               href="/"

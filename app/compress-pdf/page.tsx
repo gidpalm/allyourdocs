@@ -89,8 +89,8 @@ export default function CompressPDF() {
     processSelectedFile(droppedFile);
   };
 
-  // Advanced compression using pdf-lib with actual compression techniques
-  const compressPDFAdvanced = async (pdfBytes: Uint8Array, mode: 'enhanced' | 'extreme'): Promise<Uint8Array> => {
+  //  compression using pdf-lib with actual compression techniques
+  const compressPDF = async (pdfBytes: Uint8Array, mode: 'enhanced' | 'extreme'): Promise<Uint8Array> => {
     const { PDFDocument } = await import('pdf-lib');
     
     // Load the PDF
@@ -222,10 +222,10 @@ export default function CompressPDF() {
         compressedBytes = await compressPDFBasic(uint8Array);
         method = 'Basic (metadata removal & optimization)';
       } else {
-        compressedBytes = await compressPDFAdvanced(uint8Array, compressionType);
+        compressedBytes = await compressPDF(uint8Array, compressionType);
         method = compressionType === 'extreme' 
           ? 'Extreme (maximum optimization)' 
-          : 'Enhanced (advanced optimization)';
+          : 'Enhanced ( optimization)';
       }
       
       // Try additional native compression if available
@@ -369,14 +369,10 @@ export default function CompressPDF() {
             <div className="w-20 h-20 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Archive className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">Advanced PDF Compression</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-3"> PDF Compression</h1>
             <p className="text-gray-600">
               Reduce PDF file size with intelligent optimization
             </p>
-            <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-800">
-              <div className="w-2 h-2 rounded-full bg-amber-600 mr-2"></div>
-              Client-Side • 100% Private • No Uploads
-            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -495,7 +491,7 @@ export default function CompressPDF() {
                       >
                         <div className="text-left">
                           <div className="font-semibold text-gray-900 text-lg mb-1">Enhanced</div>
-                          <div className="text-sm text-gray-600 mb-2">Advanced optimization</div>
+                          <div className="text-sm text-gray-600 mb-2"> optimization</div>
                           <div className="text-xs font-medium text-amber-600 px-2 py-1 bg-amber-100 rounded">
                             25-50% reduction
                           </div>
@@ -581,9 +577,9 @@ export default function CompressPDF() {
                     </div>
                   </div>
 
-                  {/* Advanced Options */}
+                  {/*  Options */}
                   <div className="mb-8">
-                    <h4 className="font-semibold text-gray-700 mb-4">Advanced Options</h4>
+                    <h4 className="font-semibold text-gray-700 mb-4"> Options</h4>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
                         <div>
@@ -607,7 +603,7 @@ export default function CompressPDF() {
                   {/* Real Compression Info */}
                   <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <div className="text-sm text-blue-700">
-                      <strong>How it works:</strong> This tool uses advanced PDF structure optimization, 
+                      <strong>How it works:</strong> This tool uses  PDF structure optimization, 
                       metadata removal, and browser-native compression to significantly reduce file sizes 
                       while maintaining document quality.
                     </div>

@@ -253,10 +253,6 @@ export default function MergePDF() {
             <p className="text-gray-600">
               Combine multiple PDF files into a single document in the order you want
             </p>
-            <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-              <div className="w-2 h-2 rounded-full bg-green-600 mr-2"></div>
-              Client-Side • No server needed
-            </div>
           </div>
 
           {/* Converter Loading Status */}

@@ -15,7 +15,7 @@ export default function PDFToText() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Dynamically load PDF.js
+  
   const loadPdfLib = async () => {
     if (typeof window === 'undefined') return null
     

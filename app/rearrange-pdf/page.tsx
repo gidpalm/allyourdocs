@@ -762,23 +762,7 @@ export default function RearrangePDF() {
         <div className="flex-1">
           <h4 className="font-bold text-gray-900 mb-2 flex items-center">
             <span className="mr-2">🔒 100% Secure & Private</span>
-            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">No Uploads</span>
           </h4>
-          <p className="text-sm text-gray-700 mb-3">
-            All PDF processing happens <strong>entirely in your browser</strong>. Your documents never leave your computer.
-            We use industry-standard libraries to manipulate PDFs locally.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <div className="text-xs bg-white px-3 py-1.5 rounded-full border border-indigo-200 text-indigo-700 flex items-center">
-              <Zap className="w-3 h-3 mr-1" /> Instant Processing
-            </div>
-            <div className="text-xs bg-white px-3 py-1.5 rounded-full border border-indigo-200 text-indigo-700 flex items-center">
-              <Lock className="w-3 h-3 mr-1" /> No Server Uploads
-            </div>
-            <div className="text-xs bg-white px-3 py-1.5 rounded-full border border-indigo-200 text-indigo-700 flex items-center">
-              <EyeOff className="w-3 h-3 mr-1" /> Complete Privacy
-            </div>
-          </div>
         </div>
       </div>
     </div>

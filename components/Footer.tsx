@@ -83,7 +83,7 @@ export default function Footer() {
         
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
           <p>© {currentYear} AllYourDocs. All rights reserved.</p>
-          <p className="text-white">Built by<span className="text-yellow-800">Splittech Solutions</span></p>
+          <p className="text-white">Built by <span className="text-yellow-800">Splittech Solutions</span></p>
         </div>
       </div>
     </footer>

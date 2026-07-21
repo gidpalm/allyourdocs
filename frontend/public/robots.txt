@@ -1,8 +1,16 @@
-<!-- public/robots.txt -->
+# public/robots.txt
 User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /private/
 
-Sitemap: https://allyourdocs.vercel.app/sitemap.xml
+# Allow AdSense crawler
+User-agent: Mediapartners-Google
+Allow: /
+
+# Allow Googlebot to crawl everything
+User-agent: Googlebot
+Allow: /
+
+Sitemap: https://allyourdocs.com/sitemap.xml

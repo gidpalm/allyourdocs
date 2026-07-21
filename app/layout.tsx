@@ -151,15 +151,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        {/* ✅ AdSense - Using Next.js Script with proper strategy */}
-        {isProduction && (
-          <Script
-            id="adsbygoogle-init"
-            strategy="afterInteractive"
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9089093304511732"
-            crossOrigin="anonymous"
-          />
-        )}
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9089093304511732"
+     crossorigin="anonymous"></script>
         
         {/* ✅ JSON-LD Schemas - Server-side only, stable content */}
         <script

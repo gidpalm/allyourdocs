@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-9089093304511732">
+    <title>AdSense Verification - AllYourDocs.com</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            text-align: center;
+            padding: 40px 20px;
+            background: #0a0a0a;
+            color: #fbbf24;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #fbbf24;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 16px;
+            color: #fbbf24;
+        }
+        .badge {
+            display: inline-block;
+            background: #fbbf24;
+            color: #0a0a0a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .detail {
+            background: #0a0a0a;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 12px 0;
+            text-align: left;
+            border-left: 3px solid #fbbf24;
+        }
+        .detail code {
+            color: #fbbf24;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        .detail .label {
+            color: #d4a838;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .footer {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #2a2a2a;
+            color: #d4a838;
+            font-size: 13px;
+        }
+        .status {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 12px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="badge">Google AdSense</div>
+        <h1>Verification Page</h1>
+        <div class="status">✓ Verification Ready</div>
+        <p style="color: #d4a838; margin: 12px 0 20px 0;">
+            This page confirms ownership of <strong style="color: #fbbf24;">allyourdocs.com</strong>
+        </p>
+        
+        <div class="detail">
+            <span class="label">Publisher ID</span>
+            <code>ca-pub-9089093304511732</code>
+        </div>
+        
+        <div class="detail">
+            <span class="label">Meta Tag</span>
+            <code>&lt;meta name="google-adsense-account" content="ca-pub-9089093304511732"&gt;</code>
+        </div>
+        
+        <div class="detail">
+            <span class="label">Ads.txt Entry</span>
+            <code>google.com, pub-9089093304511732, DIRECT, f08c47fec0942fa0</code>
+        </div>
+        
+        <div class="footer">
+            This page is for Google AdSense verification purposes only.
+            <br>Last verified: <span id="date"></span>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    </script>
+</body>
+</html>

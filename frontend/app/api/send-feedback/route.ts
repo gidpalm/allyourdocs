@@ -4,8 +4,7 @@ import nodemailer from 'nodemailer'
 export async function POST(request: NextRequest) {
   try {
     const feedback = await request.json()
-    
-    // Validate required fields
+
     if (!feedback.message || !feedback.message.trim()) {
       return NextResponse.json(
         { success: false, message: 'Message is required' },
@@ -13,20 +12,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Configure email transporter
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-      // For other email providers, use:
-      // host: 'smtp.your-email-provider.com',
-      // port: 587,
-      // secure: false, // true for 465, false for other ports
     })
 
-    // Email subject based on feedback type
     const feedbackTypeLabels: Record<string, string> = {
       suggestion: 'Suggestion',
       bug: 'Bug Report',
@@ -35,13 +28,12 @@ export async function POST(request: NextRequest) {
       question: 'Question',
       other: 'Feedback'
     }
-    
+
     const feedbackType = feedbackTypeLabels[feedback.feedbackType] || 'Feedback'
 
-    // Create email content for you (admin)
     const adminMailOptions = {
       from: process.env.EMAIL_USER,
-      to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER, // Your email
+      to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
       subject: `[AllYourDocs] New ${feedbackType}: ${feedback.name || 'Anonymous'}`,
       html: `
         <!DOCTYPE html>
@@ -62,7 +54,7 @@ export async function POST(request: NextRequest) {
         <body>
           <div class="container">
             <div class="header">
-              <h1>📝 New Feedback Received</h1>
+              <h1>New Feedback Received</h1>
             </div>
             <div class="content">
               <div class="field">
@@ -71,35 +63,34 @@ export async function POST(request: NextRequest) {
                   ${feedbackType}
                 </span>
               </div>
-              
+
               <div class="field">
                 <span class="label">From:</span>
                 ${feedback.name || 'Anonymous'} ${feedback.email ? `(${feedback.email})` : ''}
               </div>
-              
+
               <div class="field">
                 <span class="label">Rating:</span>
-                <span class="rating">${'⭐'.repeat(feedback.rating)}${'☆'.repeat(5 - feedback.rating)}</span>
-                <span> (${feedback.rating}/5)</span>
+                <span>${feedback.rating}/5</span>
               </div>
-              
+
               <div class="field">
                 <span class="label">Message:</span>
                 <div class="message">${feedback.message.replace(/\n/g, '<br>')}</div>
               </div>
-              
+
               <div class="field">
                 <span class="label">Submitted:</span>
                 ${new Date(feedback.timestamp).toLocaleString()}
               </div>
-              
+
               <div class="field">
                 <span class="label">Page URL:</span>
                 <a href="${feedback.pageUrl}" style="color: #3b82f6;">${feedback.pageUrl}</a>
               </div>
-              
+
               <div class="footer">
-                <p>This feedback was submitted via AllYourDocs.pro Feedback Form</p>
+                <p>This feedback was submitted via AllYourDocs.com Feedback Form</p>
                 <p>Timestamp: ${new Date().toISOString()}</p>
               </div>
             </div>
@@ -109,10 +100,8 @@ export async function POST(request: NextRequest) {
       `,
     }
 
-    // Send email to admin (you)
     await transporter.sendMail(adminMailOptions)
 
-    // Optional: Send confirmation email to user if they provided email
     if (feedback.email) {
       const userMailOptions = {
         from: process.env.EMAIL_USER,
@@ -134,32 +123,32 @@ export async function POST(request: NextRequest) {
           <body>
             <div class="container">
               <div class="header">
-                <h1>Thank You! 🙏</h1>
+                <h1>Thank You</h1>
               </div>
               <div class="content">
                 <div class="thank-you">
                   <p>Hello ${feedback.name || 'there'},</p>
-                  <p>We've received your feedback and appreciate you taking the time to share it with us.</p>
+                  <p>We have received your feedback and appreciate you taking the time to share it with us.</p>
                   <p>Our team will review your ${feedbackType.toLowerCase()} and get back to you if needed.</p>
                 </div>
-                
+
                 <div style="background: white; padding: 15px; border-radius: 8px; margin: 20px 0;">
                   <p><strong>Your feedback type:</strong> ${feedbackType}</p>
                   <p><strong>Your rating:</strong> ${feedback.rating}/5</p>
                   <p><strong>Submitted:</strong> ${new Date(feedback.timestamp).toLocaleDateString()}</p>
                 </div>
-                
+
                 <p>If you have any additional questions or concerns, feel free to reply to this email.</p>
-                
+
                 <div class="footer">
                   <p>Best regards,</p>
-                  <p><strong>The AllYourDocs.pro Team</strong></p>
+                  <p><strong>The AllYourDocs.com Team</strong></p>
                   <p>This is an automated message. Please do not reply directly to this email.</p>
                 </div>
               </div>
             </div>
           </body>
-          </html>
+        </html>
         `,
       }
 
@@ -167,8 +156,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { 
-        success: true, 
+      {
+        success: true,
         message: 'Feedback sent successfully',
         sentConfirmation: !!feedback.email
       },
@@ -177,8 +166,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Error sending feedback email:', error)
-    
-    // More specific error messages
+
     let errorMessage = 'Failed to send feedback'
     if (error.code === 'EAUTH') {
       errorMessage = 'Email authentication failed. Please check email credentials.'
@@ -189,10 +177,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         message: errorMessage,
-        error: error.message 
+        error: error.message
       },
       { status: 500 }
     )

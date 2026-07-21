@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
@@ -40,10 +40,13 @@ import {
   Shield,
   Zap,
   Sparkles,
-  Palette,
-  EyeOff
+   Palette,
+  EyeOff,
+  ArrowLeft,
+  Check
 } from "lucide-react";
 import { PDFDocument, PDFPage } from 'pdf-lib';
+import { useToast } from "@/components/ToastProvider";
 
 interface PDFFile {
   id: string;
@@ -89,8 +92,6 @@ interface ProgressState {
 export default function RearrangePDF() {
   const [pdf, setPdf] = useState<PDFFile | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [rearrangedBlob, setRearrangedBlob] = useState<Blob | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [pageOrder, setPageOrder] = useState<number[]>([]);
@@ -113,12 +114,13 @@ export default function RearrangePDF() {
   const [processingTime, setProcessingTime] = useState<number>(0);
   const [originalFileSize, setOriginalFileSize] = useState<number>(0);
   const [processedFileSize, setProcessedFileSize] = useState<number>(0);
+  const { addToast } = useToast()
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const analyzePDF = async (pdfDoc: PDFDocument, pageNumber: number): Promise<{hasText: boolean; hasImages: boolean}> => {
     try {
-      const page = pdfDoc.getPage(pageNumber - 1);
+      const page = pdfDoc.getPage(pageNumber - 1) as any;
       const content = await page.getContent();
       
       let hasText = false;
@@ -131,7 +133,7 @@ export default function RearrangePDF() {
       // Check for images in content stream
       content.items.forEach((item: any) => {
         if (item.operator === 'Do') {
-          const xObject = page.node.Resources().lookup(item.args[0]);
+          const xObject = (page as any).node.Resources().lookup(item.args[0]);
           if (xObject && xObject.get('Subtype').name === 'Image') {
             hasImages = true;
           }
@@ -199,16 +201,16 @@ export default function RearrangePDF() {
       
       if (analysis.hasImages && analysis.hasText) {
         pageType = 'mixed';
-        textPreview = `📄 Mixed Content - Text with embedded images and graphical elements`;
+        textPreview = `Mixed Content - Text with embedded images and graphical elements`;
       } else if (analysis.hasImages) {
         pageType = 'image';
-        textPreview = `🖼️ Image Content - Contains diagrams, charts, or illustrations`;
+        textPreview = `Image Content - Contains diagrams, charts, or illustrations`;
       } else if (analysis.hasText) {
         pageType = 'text';
-        textPreview = `📝 Text Document - ${textSamples[i % textSamples.length]}`;
+        textPreview = `Text Document - ${textSamples[i % textSamples.length]}`;
       } else {
         pageType = 'unknown';
-        textPreview = `📑 Document Page - Standard page content`;
+        textPreview = `Document Page - Standard page content`;
       }
       
       const color = colors[i % colors.length];
@@ -245,17 +247,15 @@ export default function RearrangePDF() {
     const file = files[0];
     
     if (!(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
-      setError("Please select a valid PDF file");
+      addToast("Please select a valid PDF file", "error")
       return;
     }
 
     if (file.size > 50 * 1024 * 1024) {
-      setError("File size exceeds 50MB limit");
+      addToast("File size exceeds 50MB limit", "error")
       return;
     }
 
-    setError(null);
-    setSuccess(false);
     setRearrangedBlob(null);
     setSelectedPages([]);
     setSearchQuery('');
@@ -301,7 +301,7 @@ export default function RearrangePDF() {
       
     } catch (err: any) {
       console.error('Error processing PDF:', err);
-      setError(`Failed to process PDF: ${err.message || 'Unknown error'}`);
+      addToast(`Failed to process PDF: ${err.message || 'Unknown error'}`, "error")
       setProgress(null);
     } finally {
       setIsProcessing(false);
@@ -362,7 +362,7 @@ export default function RearrangePDF() {
     setProcessingTime(endTime - startTime);
     setProcessedFileSize(pdfBytes.length);
     
-    return new Blob([pdfBytes], { type: 'application/pdf' });
+    return new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -370,7 +370,7 @@ export default function RearrangePDF() {
     
     const validationError = validatePageOrder();
     if (validationError) {
-      setError(validationError);
+      addToast(validationError, "error")
       return;
     }
 
@@ -382,8 +382,6 @@ export default function RearrangePDF() {
     }
 
     setUploading(true);
-    setError(null);
-    setSuccess(false);
     setIsProcessing(true);
 
     if (downloadUrl) {
@@ -396,13 +394,13 @@ export default function RearrangePDF() {
       const url = URL.createObjectURL(modifiedPdfBlob);
       setRearrangedBlob(modifiedPdfBlob);
       setDownloadUrl(url);
-      setSuccess(true);
+      addToast("PDF modified successfully!", "success")
       
       setTimeout(() => setProgress(null), 1000);
       
     } catch (err: any) {
       console.error("PDF processing error:", err);
-      setError(`Failed to rearrange PDF: ${err.message || 'Unknown error'}`);
+      addToast(`Failed to rearrange PDF: ${err.message || 'Unknown error'}`, "error")
     } finally {
       setUploading(false);
       setIsProcessing(false);
@@ -440,15 +438,13 @@ export default function RearrangePDF() {
     if (files.length > 0) {
       const event = {
         target: { files }
-      } as React.ChangeEvent<HTMLInputElement>;
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
       handleFileChange(event);
     }
   };
 
   const handleReset = () => {
     setPdf(null);
-    setError(null);
-    setSuccess(false);
     setRearrangedBlob(null);
     setPageOrder([]);
     setPagePreviews([]);
@@ -458,19 +454,25 @@ export default function RearrangePDF() {
     setSelectedPageForDetail(null);
     setDeletedPages([]);
     setDeletionHistory([]);
+    setShowDeleteConfirm(false);
+    setPagesToDelete([]);
     setShowUndoToast(false);
     setPageStats({ textCount: 0, imageCount: 0, formCount: 0 });
     setProgress(null);
+    setIsProcessing(false);
     setProcessingTime(0);
-    
+    setOriginalFileSize(0);
+    setProcessedFileSize(0);
     if (downloadUrl) {
       URL.revokeObjectURL(downloadUrl);
       setDownloadUrl(null);
     }
-    
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    setViewMode('grid');
+    setShowInstructions(true);
+    setFilterType('all');
   };
 
   const deletePage = (pageIndex: number) => {
@@ -696,17 +698,17 @@ export default function RearrangePDF() {
   const getPageTypeColor = (pageType: string) => {
     switch(pageType) {
       case 'text':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-indigo-50 text-slate-500 border-slate-200';
       case 'image':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-indigo-50 text-slate-500 border-slate-200';
       case 'mixed':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-indigo-50 text-slate-500 border-slate-200';
       case 'form':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
+        return 'bg-indigo-50 text-slate-500 border-slate-200';
       case 'table':
-        return 'bg-pink-100 text-pink-800 border-pink-200';
+        return 'bg-indigo-50 text-slate-500 border-slate-200';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-indigo-50 text-slate-800 border-slate-200';
     }
   };
 
@@ -741,78 +743,63 @@ export default function RearrangePDF() {
 
   const ProgressBar = ({ progress }: { progress: ProgressState }) => (
     <div className="fixed top-0 left-0 right-0 z-50">
-      <div className="h-1 bg-gray-200">
+      <div className="h-1 bg-indigo-50">
         <div 
-          className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300"
+          className="h-full bg-gradient-to-r bg-indigo-600 transition-all duration-300"
           style={{ width: `${(progress.loaded / progress.total) * 100}%` }}
         />
       </div>
-      <div className="bg-white shadow-md p-2 text-center text-sm">
+      <div className="bg-slate-100 shadow-sm p-2 text-center text-sm">
         {progress.step} ({Math.round((progress.loaded / progress.total) * 100)}%)
       </div>
     </div>
   );
 
   const ClientSideInfo = () => (
-    <div className="mb-6 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-2xl p-5">
+    <div className="mb-6 bg-indigo-50 border border-slate-200 rounded-2xl p-5">
       <div className="flex items-start">
-        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+        <div className="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
           <Shield className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1">
-          <h4 className="font-bold text-gray-900 mb-2 flex items-center">
-            <span className="mr-2">🔒 100% Secure & Private</span>
-            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">No Uploads</span>
+          <h4 className="font-bold text-indigo-600 mb-2 flex items-center">
+            <Shield className="w-5 h-5 mr-2 text-indigo-600" />
+            100% Secure & Private
           </h4>
-          <p className="text-sm text-gray-700 mb-3">
-            All PDF processing happens <strong>entirely in your browser</strong>. Your documents never leave your computer.
-            We use industry-standard libraries to manipulate PDFs locally.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <div className="text-xs bg-white px-3 py-1.5 rounded-full border border-indigo-200 text-indigo-700 flex items-center">
-              <Zap className="w-3 h-3 mr-1" /> Instant Processing
-            </div>
-            <div className="text-xs bg-white px-3 py-1.5 rounded-full border border-indigo-200 text-indigo-700 flex items-center">
-              <Lock className="w-3 h-3 mr-1" /> No Server Uploads
-            </div>
-            <div className="text-xs bg-white px-3 py-1.5 rounded-full border border-indigo-200 text-indigo-700 flex items-center">
-              <EyeOff className="w-3 h-3 mr-1" /> Complete Privacy
-            </div>
-          </div>
         </div>
       </div>
     </div>
   );
 
   const StatsCard = () => (
-    <div className="mb-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-200 p-5">
-      <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
+    <div className="mb-6 bg-indigo-50 rounded-2xl border border-slate-200 p-5">
+      <h4 className="font-semibold text-indigo-600 mb-4 flex items-center">
         <Sparkles className="w-5 h-5 mr-2 text-indigo-600" />
         Document Analysis
       </h4>
       <div className="grid grid-cols-3 gap-3">
-        <div className="text-center p-3 bg-blue-50 rounded-xl">
-          <div className="text-2xl font-bold text-blue-600">{pageOrder.length}</div>
-          <div className="text-xs text-gray-600">Total Pages</div>
+        <div className="text-center p-3 bg-indigo-50 rounded-xl">
+          <div className="text-2xl font-bold text-indigo-600">{pageOrder.length}</div>
+          <div className="text-xs text-slate-600">Total Pages</div>
         </div>
-        <div className="text-center p-3 bg-green-50 rounded-xl">
-          <div className="text-2xl font-bold text-green-600">{pageStats.textCount}</div>
-          <div className="text-xs text-gray-600">Text Pages</div>
+        <div className="text-center p-3 bg-indigo-50 rounded-xl">
+          <div className="text-2xl font-bold text-indigo-600">{pageStats.textCount}</div>
+          <div className="text-xs text-slate-600">Text Pages</div>
         </div>
-        <div className="text-center p-3 bg-purple-50 rounded-xl">
-          <div className="text-2xl font-bold text-purple-600">{pageStats.imageCount}</div>
-          <div className="text-xs text-gray-600">Image Pages</div>
+        <div className="text-center p-3 bg-indigo-50 rounded-xl">
+          <div className="text-2xl font-bold text-indigo-600">{pageStats.imageCount}</div>
+          <div className="text-xs text-slate-600">Image Pages</div>
         </div>
       </div>
       {processingTime > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="mt-4 pt-4 border-t border-slate-200">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Processing Time:</span>
-            <span className="font-semibold text-gray-900">{formatTime(processingTime)}</span>
+            <span className="text-slate-600">Processing Time:</span>
+            <span className="font-semibold text-indigo-600">{formatTime(processingTime)}</span>
           </div>
           <div className="flex justify-between text-sm mt-1">
-            <span className="text-gray-600">File Size:</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-slate-600">File Size:</span>
+            <span className="font-semibold text-indigo-600">
               {formatFileSize(originalFileSize)} → {formatFileSize(processedFileSize)}
             </span>
           </div>
@@ -822,20 +809,20 @@ export default function RearrangePDF() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       {progress && <ProgressBar progress={progress} />}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div className="card overflow-hidden">
           <div className="p-8">
             <div className="text-center mb-10">
-              <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <div className="w-24 h-24 bg-indigo-600 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Layers className="w-12 h-12 text-white" />
               </div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold text-indigo-600 mb-3 text-indigo-600">
                 PDF Page Editor
               </h1>
-              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              <p className="text-slate-600 text-lg max-w-2xl mx-auto">
                 Professionally edit, rearrange, and manage PDF pages with complete privacy. 
                 Everything happens in your browser.
               </p>
@@ -849,7 +836,7 @@ export default function RearrangePDF() {
                   className={`border-3 border-dashed rounded-2xl transition-all duration-300 cursor-pointer mb-6 hover:shadow-lg ${
                     pdf 
                       ? "border-indigo-400 bg-gradient-to-br from-indigo-50 to-white shadow-md" 
-                      : "border-gray-300 hover:border-indigo-400 hover:bg-indigo-50"
+                      : "border-slate-200 hover:border-indigo-500 hover:bg-indigo-50"
                   }`}
                   onClick={() => document.getElementById("file-upload")?.click()}
                   onDragOver={handleDragOver}
@@ -857,9 +844,9 @@ export default function RearrangePDF() {
                 >
                   <div className="text-center p-8">
                     <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 ${
-                      pdf ? "bg-gradient-to-br from-indigo-100 to-purple-100" : "bg-gradient-to-br from-gray-100 to-gray-200"
+                      pdf ? "bg-indigo-50" : "bg-indigo-50"
                     }`}>
-                      <Upload className={`w-10 h-10 ${pdf ? "text-indigo-600" : "text-gray-400"}`} />
+                      <Upload className={`w-10 h-10 ${pdf ? "text-indigo-600" : "text-slate-400"}`} />
                     </div>
                     <input
                       type="file"
@@ -875,30 +862,30 @@ export default function RearrangePDF() {
                           <File className="w-5 h-5 mr-2" />
                           PDF Loaded
                         </div>
-                        <div className="text-gray-700 text-sm truncate px-4 mb-2 font-medium">
+                        <div className="text-slate-600 text-sm truncate px-4 mb-2 font-medium">
                           {pdf.name}
                         </div>
-                        <div className="text-gray-500 text-xs mb-4">
-                          {formatFileSize(pdf.size)} • {pdf.pageCount} pages
+                        <div className="text-slate-500 text-xs mb-4">
+                          {formatFileSize(pdf.size)} — {pdf.pageCount} pages
                         </div>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             document.getElementById("file-upload")?.click();
                           }}
-                          className="text-indigo-600 hover:text-indigo-800 font-medium text-sm px-4 py-2 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-colors"
+                          className="text-indigo-600 hover:text-slate-500 font-medium text-sm px-4 py-2 bg-white border border-slate-200 rounded-lg hover:bg-indigo-50 transition-colors"
                         >
                           Choose Different PDF
                         </button>
                       </div>
                     ) : (
                       <div>
-                        <div className="text-gray-700 font-bold text-lg mb-2">
+                        <div className="text-slate-600 font-bold text-lg mb-2">
                           Drop PDF Here
                         </div>
-                        <div className="text-gray-500 mb-4">or click to browse</div>
-                        <div className="text-gray-400 text-sm bg-gray-50 rounded-lg p-3 inline-block">
-                          Max 50MB • Secure & Private
+                        <div className="text-slate-500 mb-4">or click to browse</div>
+                        <div className="text-slate-400 text-sm bg-slate-100 rounded-lg p-3 inline-block">
+                          Max 50MB — Secure & Private
                         </div>
                       </div>
                     )}
@@ -916,25 +903,25 @@ export default function RearrangePDF() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                        className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                        className="w-full px-4 py-3 pr-12 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
                       />
                       <button
                         onClick={handleSearch}
-                        className="absolute right-3 top-3 text-gray-400 hover:text-indigo-600"
+                        className="absolute right-3 top-3 text-slate-400 hover:text-indigo-600"
                       >
                         <Search className="w-5 h-5" />
                       </button>
                     </div>
                     
                     <div className="mb-3">
-                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                      <label className="block text-sm font-medium text-slate-600 mb-2 flex items-center">
                         <Filter className="w-4 h-4 mr-2" />
                         Filter by Type
                       </label>
                       <select
                         value={filterType}
                         onChange={(e) => setFilterType(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm shadow-sm"
+                        className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm shadow-sm"
                       >
                         <option value="all">All Page Types</option>
                         <option value="text">Text Pages</option>
@@ -954,8 +941,8 @@ export default function RearrangePDF() {
                 )}
 
                 {pdf && pageOrder.length > 0 && (
-                  <div className="mb-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-200 p-5">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <div className="mb-6 bg-indigo-50 rounded-2xl border border-slate-200 p-5">
+                    <h3 className="text-lg font-semibold text-indigo-600 mb-4 flex items-center">
                       <Shuffle className="w-5 h-5 mr-2 text-indigo-600" />
                       Quick Actions
                     </h3>
@@ -963,30 +950,30 @@ export default function RearrangePDF() {
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           onClick={sortAscending}
-                          className="px-3 py-2.5 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 text-sm flex items-center justify-center shadow-sm"
+                          className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 text-sm flex items-center justify-center shadow-sm"
                         >
                           <SortAsc className="w-4 h-4 mr-2" />
-                          Sort ↑
+                          Sort Asc
                         </button>
                         <button
                           onClick={sortDescending}
-                          className="px-3 py-2.5 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 text-sm flex items-center justify-center shadow-sm"
+                          className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 text-sm flex items-center justify-center shadow-sm"
                         >
                           <SortDesc className="w-4 h-4 mr-2" />
-                          Sort ↓
+                          Sort Desc
                         </button>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           onClick={reverseOrder}
-                          className="px-3 py-2.5 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 text-sm flex items-center justify-center shadow-sm"
+                          className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 text-sm flex items-center justify-center shadow-sm"
                         >
                           <RotateCw className="w-4 h-4 mr-2" />
                           Reverse
                         </button>
                         <button
                           onClick={shufflePages}
-                          className="px-3 py-2.5 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 text-sm flex items-center justify-center shadow-sm"
+                          className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 text-sm flex items-center justify-center shadow-sm"
                         >
                           <Shuffle className="w-4 h-4 mr-2" />
                           Shuffle
@@ -994,24 +981,24 @@ export default function RearrangePDF() {
                       </div>
                       
                       {selectedPages.length > 0 && (
-                        <div className="pt-3 border-t border-gray-200">
-                          <h4 className="text-sm font-medium text-gray-700 mb-2">Selected ({selectedPages.length})</h4>
+                        <div className="pt-3 border-t border-slate-200">
+                          <h4 className="text-sm font-medium text-slate-600 mb-2">Selected ({selectedPages.length})</h4>
                           <div className="grid grid-cols-2 gap-2">
                             <button
                               onClick={() => moveSelectedPages('top')}
-                              className="px-3 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-xl hover:bg-indigo-100 text-sm"
+                              className="px-3 py-2 bg-indigo-50 border border-slate-200 text-slate-500 rounded-xl hover:bg-indigo-50 text-sm"
                             >
                               Move to Top
                             </button>
                             <button
                               onClick={() => moveSelectedPages('bottom')}
-                              className="px-3 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-xl hover:bg-indigo-100 text-sm"
+                              className="px-3 py-2 bg-indigo-50 border border-slate-200 text-slate-500 rounded-xl hover:bg-indigo-50 text-sm"
                             >
                               Move to Bottom
                             </button>
                             <button
                               onClick={deleteSelectedPages}
-                              className="col-span-2 px-3 py-2 bg-red-50 border border-red-200 text-red-700 rounded-xl hover:bg-red-100 text-sm flex items-center justify-center"
+                              className="col-span-2 px-3 py-2 bg-red-900/30 border border-red-700 text-slate-500 rounded-xl hover:bg-indigo-50 text-sm flex items-center justify-center"
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete Selected
@@ -1023,41 +1010,14 @@ export default function RearrangePDF() {
                   </div>
                 )}
 
-                {error && (
-                  <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-start shadow-sm">
-                    <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm">{error}</div>
-                  </div>
-                )}
-
-                {success && (
-                  <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl flex items-start shadow-sm">
-                    <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-                    <div className="flex-1">
-                      <div className="font-bold">PDF Modified Successfully!</div>
-                      <div className="text-sm mt-1">
-                        {deletedPages.length > 0 
-                          ? `${deletedPages.length} page(s) removed. Ready to download.`
-                          : 'Pages rearranged. Ready to download.'
-                        }
-                        {processingTime > 0 && (
-                          <div className="mt-1 text-green-600">
-                            Processed in {formatTime(processingTime)}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 <div className="space-y-4">
                   <button
                     onClick={handleSubmit}
                     disabled={uploading || !pdf || pageOrder.length === 0 || isProcessing}
                     className={`w-full px-6 py-4 font-bold rounded-xl transition-all flex items-center justify-center shadow-lg ${
                       uploading || !pdf || pageOrder.length === 0 || isProcessing
-                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        : "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-xl hover:scale-[1.02] transform transition-all duration-200"
+                        ? "bg-gray-300 text-slate-500 cursor-not-allowed"
+                        : "bg-indigo-600 text-white text-white hover:shadow-xl hover:scale-[1.02] transform transition-all duration-200"
                     }`}
                   >
                     {uploading || isProcessing ? (
@@ -1073,10 +1033,10 @@ export default function RearrangePDF() {
                     )}
                   </button>
                   
-                  {success && rearrangedBlob && (
+                   {rearrangedBlob && (
                     <button
                       onClick={handleDownload}
-                      className="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:shadow-xl hover:scale-[1.02] shadow-lg transform transition-all duration-200 flex items-center justify-center"
+                      className="w-full px-6 py-4 bg-indigo-600 text-white font-bold rounded-xl hover:shadow-xl hover:scale-[1.02] shadow-lg transform transition-all duration-200 flex items-center justify-center"
                     >
                       <Download className="w-5 h-5 mr-2" />
                       Download Modified PDF
@@ -1085,7 +1045,7 @@ export default function RearrangePDF() {
                   
                   <button
                     onClick={handleReset}
-                    className="w-full px-6 py-4 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-colors shadow-sm flex items-center justify-center"
+                    className="w-full px-6 py-4 bg-indigo-50 text-slate-600 font-medium rounded-xl hover:bg-indigo-50 transition-colors shadow-sm flex items-center justify-center"
                   >
                     <RotateCw className="w-5 h-5 mr-2" />
                     Start Over
@@ -1098,33 +1058,33 @@ export default function RearrangePDF() {
                   <div>
                     <div className="flex items-center justify-between mb-6">
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                        <h3 className="text-lg font-bold text-indigo-600 flex items-center">
                           <Grid className="w-5 h-5 mr-2 text-indigo-600" />
                           Page Management
-                          <span className="ml-2 text-sm font-normal bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">
+                          <span className="ml-2 text-sm font-normal bg-indigo-50 text-slate-500 px-2 py-1 rounded-full">
                             {pageOrder.length} pages
                           </span>
                           {deletedPages.length > 0 && (
-                            <span className="ml-2 text-sm font-normal bg-red-100 text-red-800 px-2 py-1 rounded-full">
+                            <span className="ml-2 text-sm font-normal bg-indigo-50 text-slate-500 px-2 py-1 rounded-full">
                               -{deletedPages.length}
                             </span>
                           )}
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1">
-                          Drag to reorder • Click to select • Use quick actions for bulk operations
+                        <p className="text-sm text-slate-600 mt-1">
+                          Drag to reorder — Click to select — Use quick actions for bulk operations
                         </p>
                       </div>
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => setViewMode('grid')}
-                          className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-indigo-100 text-indigo-600 shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                          className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-indigo-50 text-indigo-600 shadow-sm' : 'bg-indigo-50 text-slate-600 hover:bg-indigo-50'}`}
                           title="Grid View"
                         >
                           <Grid className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setShowInstructions(!showInstructions)}
-                          className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+                          className="p-2 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg"
                           title="Toggle Instructions"
                         >
                           <Eye className="w-4 h-4" />
@@ -1133,17 +1093,17 @@ export default function RearrangePDF() {
                     </div>
 
                     {showInstructions && (
-                      <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-4">
-                        <h4 className="font-bold text-blue-700 mb-2 flex items-center">
+                      <div className="mb-6 bg-indigo-50 border border-slate-200 rounded-2xl p-4">
+                        <h4 className="font-bold text-indigo-600 mb-2 flex items-center">
                           <Info className="w-4 h-4 mr-2" />
                           How to Use:
                         </h4>
-                        <ul className="text-sm text-blue-600 space-y-1">
-                          <li>• <strong>Drag & drop</strong> pages to rearrange them</li>
-                          <li>• <strong>Click</strong> pages to select them (Ctrl/Cmd + click for multiple)</li>
-                          <li>• <strong>Delete pages</strong> using the trash icon or bulk delete selected</li>
-                          <li>• <strong>Undo</strong> any action with the undo button</li>
-                          <li>• <strong>Download</strong> your modified PDF when ready</li>
+                        <ul className="text-sm text-indigo-600 space-y-1">
+                          <li>— <strong>Drag & drop</strong> pages to rearrange them</li>
+                          <li>— <strong>Click</strong> pages to select them (Ctrl/Cmd + click for multiple)</li>
+                          <li>— <strong>Delete pages</strong> using the trash icon or bulk delete selected</li>
+                          <li>— <strong>Undo</strong> any action with the undo button</li>
+                          <li>— <strong>Download</strong> your modified PDF when ready</li>
                         </ul>
                       </div>
                     )}
@@ -1166,7 +1126,7 @@ export default function RearrangePDF() {
                                 isSelected
                                   ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-300 scale-[1.02] shadow-md'
                                   : isSearchResult
-                                  ? 'border-yellow-500 bg-yellow-50 ring-2 ring-yellow-300 shadow-md'
+                                  ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-300 shadow-md'
                                   : getPageTypeColor(pageData.pageType)
                               }`}
                               draggable
@@ -1200,7 +1160,7 @@ export default function RearrangePDF() {
                                 <div className={`text-xs px-3 py-1.5 rounded-full font-bold ${getPageTypeColor(pageData.pageType)} shadow-sm`}>
                                   {pageData.pageType.toUpperCase()}
                                 </div>
-                                <div className="text-xs text-gray-600 mt-3 text-center px-2">
+                                <div className="text-xs text-slate-600 mt-3 text-center px-2">
                                   Pos: {globalIndex + 1}
                                 </div>
                               </div>
@@ -1212,10 +1172,10 @@ export default function RearrangePDF() {
                                     movePageUp(globalIndex);
                                   }}
                                   disabled={globalIndex === 0}
-                                  className={`p-1.5 rounded-lg bg-white/90 backdrop-blur-sm shadow ${
+                                  className={`p-1.5 rounded-lg bg-slate-100 backdrop-blur-sm shadow ${
                                     globalIndex === 0 
-                                      ? 'text-gray-300 cursor-not-allowed' 
-                                      : 'text-gray-600 hover:bg-white hover:text-indigo-600'
+                                      ? 'text-slate-500 cursor-not-allowed' 
+                                      : 'text-slate-600 hover:bg-slate-100 hover:text-indigo-600'
                                   }`}
                                   title="Move up"
                                 >
@@ -1227,10 +1187,10 @@ export default function RearrangePDF() {
                                     movePageDown(globalIndex);
                                   }}
                                   disabled={globalIndex === pageOrder.length - 1}
-                                  className={`p-1.5 rounded-lg bg-white/90 backdrop-blur-sm shadow ${
+                                  className={`p-1.5 rounded-lg bg-slate-100 backdrop-blur-sm shadow ${
                                     globalIndex === pageOrder.length - 1
-                                      ? 'text-gray-300 cursor-not-allowed' 
-                                      : 'text-gray-600 hover:bg-white hover:text-indigo-600'
+                                      ? 'text-slate-500 cursor-not-allowed' 
+                                      : 'text-slate-600 hover:bg-slate-100 hover:text-indigo-600'
                                   }`}
                                   title="Move down"
                                 >
@@ -1241,7 +1201,7 @@ export default function RearrangePDF() {
                                     e.stopPropagation();
                                     confirmDeletePages([globalIndex]);
                                   }}
-                                  className="p-1.5 rounded-lg bg-white/90 backdrop-blur-sm text-red-600 hover:bg-red-50 shadow"
+                                  className="p-1.5 rounded-lg bg-slate-100 backdrop-blur-sm text-indigo-600 hover:bg-red-900/30 shadow"
                                   title="Delete page"
                                 >
                                   <Trash2 className="w-3 h-3" />
@@ -1249,14 +1209,16 @@ export default function RearrangePDF() {
                               </div>
                               
                               {isSelected && (
-                                <div className="absolute top-10 right-2 bg-indigo-500 text-white text-xs px-2 py-1 rounded-full shadow-md">
-                                  ✓ Selected
+                                <div className="absolute top-10 right-2 bg-indigo-600 text-white text-xs px-2 py-1 rounded-full shadow-md flex items-center">
+                                  <Check className="w-3 h-3 mr-1" />
+                                  Selected
                                 </div>
                               )}
                               
                               {isSearchResult && (
-                                <div className="absolute top-2 left-10 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full shadow-md">
-                                  🔍
+                                <div className="absolute top-2 left-10 bg-indigo-600 text-white text-xs px-2 py-1 rounded-full shadow-md flex items-center">
+                                  <Search className="w-3 h-3 mr-1" />
+                                  Match
                                 </div>
                               )}
                             </div>
@@ -1265,12 +1227,12 @@ export default function RearrangePDF() {
                       </div>
                     )}
 
-                    <div className="mt-6 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-200 p-5">
-                      <h4 className="font-bold text-gray-900 mb-3 flex items-center">
+                    <div className="mt-6 bg-indigo-50 border border-slate-200 p-5">
+                      <h4 className="font-bold text-indigo-600 mb-3 flex items-center">
                         <Palette className="w-5 h-5 mr-2 text-indigo-600" />
                         Current Page Order
                       </h4>
-                      <div className="text-sm text-gray-600 flex flex-wrap gap-1.5">
+                      <div className="text-sm text-slate-600 flex flex-wrap gap-1.5">
                         {pageOrder.map((num, idx) => {
                           const isSelected = selectedPages.includes(idx);
                           const isSearchResult = searchResults.includes(idx);
@@ -1280,12 +1242,12 @@ export default function RearrangePDF() {
                             <span key={idx} className="flex items-center">
                               <span className={`px-3 py-1.5 rounded-xl flex items-center space-x-2 shadow-sm ${
                                 isSelected 
-                                  ? 'bg-indigo-100 text-indigo-700 border border-indigo-300' 
+                                  ? 'bg-indigo-50 text-slate-500 border border-slate-200' 
                                   : isSearchResult
-                                  ? 'bg-yellow-100 text-yellow-700 border border-yellow-300'
+                                  ? 'bg-indigo-50 text-slate-500 border border-slate-200'
                                   : pageData 
                                   ? `${getPageTypeColor(pageData.pageType)} border`
-                                  : 'bg-gray-200 text-gray-700 border border-gray-300'
+                                  : 'bg-indigo-50 text-slate-600 border border-slate-200'
                               }`}>
                                 {pageData && (
                                   <span className="opacity-75">
@@ -1299,22 +1261,22 @@ export default function RearrangePDF() {
                                 <span className="font-medium">{num}</span>
                               </span>
                               {idx < pageOrder.length - 1 && (
-                                <span className="mx-1 text-gray-400">→</span>
+                                <span className="mx-1 text-slate-400">→</span>
                               )}
                             </span>
                           );
                         })}
                       </div>
                       {deletedPages.length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-gray-200">
+                        <div className="mt-3 pt-3 border-t border-slate-200">
                           <div className="text-sm">
-                            <span className="text-gray-500">Deleted pages: </span>
-                            <span className="text-red-600 font-medium">
+                            <span className="text-slate-500">Deleted pages: </span>
+                            <span className="text-indigo-600 font-medium">
                               {deletedPages.sort((a, b) => a - b).join(', ')}
                             </span>
                             <button
                               onClick={restoreAllDeletedPages}
-                              className="ml-3 text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                              className="ml-3 text-xs text-indigo-600 hover:text-slate-500 font-medium"
                             >
                               (Restore all)
                             </button>
@@ -1325,13 +1287,13 @@ export default function RearrangePDF() {
                   </div>
                 ) : (
                   <div className="text-center py-16">
-                    <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                      <Layers className="w-12 h-12 text-gray-400" />
+                    <div className="w-24 h-24 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                      <Layers className="w-12 h-12 text-slate-400" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-700 mb-3">
+                    <h3 className="text-2xl font-bold text-slate-600 mb-3">
                       Ready to Edit Your PDF
                     </h3>
-                    <p className="text-gray-600 max-w-md mx-auto">
+                    <p className="text-slate-600 max-w-md mx-auto">
                       Upload a PDF file to start rearranging, deleting, and managing pages with our secure, browser-based editor.
                     </p>
                   </div>
@@ -1341,26 +1303,26 @@ export default function RearrangePDF() {
 
             {/* Modals and toasts remain similar but updated for styling */}
             {showDeleteConfirm && (
-              <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+              <div className="fixed inset-0 bg-slate-50/70 flex items-center justify-center z-50 p-4">
                 <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
                   <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-2xl flex items-center justify-center mr-4">
-                      <AlertTriangle className="w-6 h-6 text-red-600" />
+                    <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center mr-4">
+                      <AlertTriangle className="w-6 h-6 text-indigo-600" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900">Delete Pages</h3>
-                      <p className="text-sm text-gray-600">
+                      <h3 className="font-bold text-indigo-600">Delete Pages</h3>
+                      <p className="text-sm text-slate-600">
                         {pagesToDelete.length} page{pagesToDelete.length !== 1 ? 's' : ''} selected
                       </p>
                     </div>
                   </div>
                   
                   <div className="mb-6">
-                    <p className="text-gray-700 mb-3">
+                    <p className="text-slate-600 mb-3">
                       Are you sure you want to delete {pagesToDelete.length === 1 ? 'this page' : 'these pages'}? 
                     </p>
-                    <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                      <p className="text-sm text-red-700">
+                    <div className="bg-red-900/30 border border-red-700 rounded-xl p-4">
+                      <p className="text-sm text-slate-500">
                         <strong>Note:</strong> Pages will be permanently removed from the output PDF.
                         You can undo this action immediately after deletion.
                       </p>
@@ -1370,7 +1332,7 @@ export default function RearrangePDF() {
                   <div className="flex justify-end space-x-3">
                     <button
                       onClick={() => setShowDeleteConfirm(false)}
-                      className="px-5 py-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors font-medium"
+                      className="px-5 py-2.5 text-slate-600 hover:bg-indigo-50 rounded-xl transition-colors font-medium"
                     >
                       Cancel
                     </button>
@@ -1381,7 +1343,7 @@ export default function RearrangePDF() {
                         });
                         setShowDeleteConfirm(false);
                       }}
-                      className="px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:shadow-lg transition-all font-medium"
+                      className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:shadow-lg transition-all font-medium"
                     >
                       Delete {pagesToDelete.length} Page{pagesToDelete.length !== 1 ? 's' : ''}
                     </button>
@@ -1391,16 +1353,16 @@ export default function RearrangePDF() {
             )}
 
             {showUndoToast && deletionHistory.length > 0 && (
-              <div className="fixed bottom-6 right-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-xl shadow-2xl p-4 z-40 flex items-center animate-slide-up max-w-sm">
+              <div className="fixed bottom-6 right-6 bg-indigo-600 text-white rounded-xl shadow-2xl p-4 z-40 flex items-center animate-slide-up max-w-sm">
                 <div className="flex-1">
                   <div className="font-bold">Pages Deleted</div>
-                  <div className="text-sm text-gray-300">
+                  <div className="text-sm text-slate-500">
                     {deletionHistory[0].deletedPages.length} page{deletionHistory[0].deletedPages.length !== 1 ? 's' : ''} removed
                   </div>
                 </div>
                 <button
                   onClick={undoLastDeletion}
-                  className="ml-4 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-lg text-sm flex items-center font-medium shadow"
+                  className="ml-4 px-4 py-2 bg-gradient-to-r bg-indigo-600 hover:bg-indigo-700 rounded-lg text-sm flex items-center font-medium shadow"
                 >
                   <Undo className="w-3 h-3 mr-2" />
                   Undo
@@ -1408,52 +1370,54 @@ export default function RearrangePDF() {
               </div>
             )}
 
-            <div className="mt-12 pt-8 border-t border-gray-200">
-              <h3 className="text-2xl font-bold text-center mb-8 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                ✨ Professional PDF Editing Features
+            <div className="mt-12 pt-8 border-t border-slate-200">
+              <h3 className="text-2xl font-bold text-center mb-8 text-indigo-600 flex items-center justify-center">
+                <Sparkles className="w-6 h-6 mr-3" />
+                Professional PDF Editing Features
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mb-4">
-                    <Shield className="w-6 h-6 text-blue-600" />
+                <div className="card p-6 hover:shadow-lg transition-shadow">
+                  <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-4">
+                    <Shield className="w-6 h-6 text-indigo-600" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-2">100% Secure Processing</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-bold text-indigo-600 mb-2">100% Secure Processing</h4>
+                  <p className="text-sm text-slate-600">
                     All PDF manipulation happens locally in your browser. No files are uploaded to any server.
                   </p>
                 </div>
                 
-                <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center mb-4">
-                    <Zap className="w-6 h-6 text-green-600" />
+                <div className="card p-6 hover:shadow-lg transition-shadow">
+                  <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-4">
+                    <Zap className="w-6 h-6 text-indigo-600" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Real-Time Preview</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-bold text-indigo-600 mb-2">Real-Time Preview</h4>
+                  <p className="text-sm text-slate-600">
                     See page previews with automatic content detection before making changes.
                   </p>
                 </div>
                 
-                <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center mb-4">
-                    <Sparkles className="w-6 h-6 text-purple-600" />
+                <div className="card p-6 hover:shadow-lg transition-shadow">
+                  <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-4">
+                    <Sparkles className="w-6 h-6 text-indigo-600" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Smart Page Analysis</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-bold text-indigo-600 mb-2">Smart Page Analysis</h4>
+                  <p className="text-sm text-slate-600">
                     Automatically detects text, images, and mixed content for better organization.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-              <Link
-                href="/"
-                className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium transition-colors hover:underline"
-              >
-                ← Back to All Tools
-              </Link>
-              <p className="text-sm text-gray-500 mt-4">
-                Powered by pdf-lib • Works entirely in your browser • No data leaves your computer
+            <div className="mt-8 pt-6 border-t border-slate-200 text-center">
+            <Link
+              href="/"
+              className="inline-flex items-center text-indigo-600 hover:text-slate-500 font-medium transition-colors hover:underline"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to All Tools
+            </Link>
+              <p className="text-sm text-slate-500 mt-4">
+                Powered by pdf-lib — Works entirely in your browser — No data leaves your computer
               </p>
             </div>
           </div>
@@ -1462,3 +1426,7 @@ export default function RearrangePDF() {
     </div>
   );
 }
+
+
+
+

@@ -1,30 +1,29 @@
-﻿"use client"
+"use client"
 
 import { useState, useRef, ChangeEvent, FormEvent, DragEvent } from "react"
 import Link from "next/link"
 import { Upload, FileText, Download, AlertCircle, CheckCircle, Loader2, RefreshCw } from "lucide-react"
+import { useToast } from "@/components/ToastProvider"
 
 export default function PDFToWord() {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+  const { addToast } = useToast()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Dynamically load libraries
   const loadPdfLib = async () => {
     if (typeof window === 'undefined') return null
-    
+
     try {
-      // Load PDF.js from CDN
       if (!window.pdfjsLib) {
         await new Promise((resolve, reject) => {
           const script = document.createElement('script')
           script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
           script.onload = () => {
-            window.pdfjsLib.GlobalWorkerOptions.workerSrc = 
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc =
               'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
             resolve(null)
           }
@@ -41,9 +40,8 @@ export default function PDFToWord() {
 
   const loadDocxLib = async () => {
     if (typeof window === 'undefined') return null
-    
+
     try {
-      // Dynamic import for docx
       const docxModule = await import('docx')
       return docxModule
     } catch (err) {
@@ -55,23 +53,22 @@ export default function PDFToWord() {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
     if (selectedFile) {
-      const isPdf = selectedFile.type === 'application/pdf' || 
-                   selectedFile.name.toLowerCase().endsWith('.pdf')
-      
+      const isPdf = selectedFile.type === 'application/pdf' ||
+                    selectedFile.name.toLowerCase().endsWith('.pdf')
+
       if (!isPdf) {
-        setError("Only PDF files are supported (.pdf)")
+        addToast("Only PDF files are supported (.pdf)", "error")
         return
       }
-      
+
       if (selectedFile.size > 10 * 1024 * 1024) {
-        setError("File size exceeds 10MB limit")
+        addToast("File size exceeds 10MB limit", "error")
         return
       }
-      
+
       setFile(selectedFile)
-      setError(null)
       setSuccess(false)
-      
+
       if (downloadUrl) {
         URL.revokeObjectURL(downloadUrl)
         setDownloadUrl(null)
@@ -100,14 +97,13 @@ export default function PDFToWord() {
 
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
-      
+
       reader.onload = async (e) => {
         try {
           const arrayBuffer = e.target?.result as ArrayBuffer
           const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
           let text = ''
-          
-          // Extract text from each page
+
           for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i)
             const textContent = await page.getTextContent()
@@ -116,13 +112,13 @@ export default function PDFToWord() {
               .join(' ')
             text += pageText + '\n'
           }
-          
+
           resolve(text.trim())
         } catch (err) {
           reject(err)
         }
       }
-      
+
       reader.onerror = () => reject(new Error("Failed to read file"))
       reader.readAsArrayBuffer(file)
     })
@@ -133,23 +129,21 @@ export default function PDFToWord() {
     if (!docxModule) throw new Error("Failed to load DOCX library")
 
     const { Document, Packer, Paragraph, TextRun } = docxModule
-    
-    // Clean text: remove extra whitespace and create paragraphs
+
     const paragraphs = text
       .split('\n')
       .filter(line => line.trim().length > 0)
       .map(line => line.trim())
-    
-    // Create document with JUST the extracted text, no headers/footers
+
     const doc = new Document({
       sections: [{
         properties: {},
-        children: paragraphs.map(text => 
+        children: paragraphs.map(text =>
           new Paragraph({
             children: [
               new TextRun({
                 text: text,
-                size: 24, // 12pt
+                size: 24,
               }),
             ],
           })
@@ -162,39 +156,35 @@ export default function PDFToWord() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    
+
     if (!file) {
-      setError("Please select a PDF file")
+      addToast("Please select a PDF file", "error")
       return
     }
 
     setUploading(true)
-    setError(null)
     setSuccess(false)
 
     try {
       console.log("Converting PDF to Word:", file.name)
-      
-      // Extract clean text
+
       const text = await extractTextFromPDF(file)
-      
-      // Create Word document with JUST the text
       const blob = await createWordDocument(text)
-      
-      // Create download URL
+
       const url = URL.createObjectURL(blob)
       setDownloadUrl(url)
+      addToast("Conversion complete!", "success")
       setSuccess(true)
-      
+
     } catch (err: any) {
       console.error("Conversion error:", err)
-      
+
       if (err.message.includes("password")) {
-        setError("Password-protected PDFs cannot be converted")
+        addToast("Password-protected PDFs cannot be converted", "error")
       } else if (err.message.includes("corrupted")) {
-        setError("The PDF file appears to be corrupted")
+        addToast("The PDF file appears to be corrupted", "error")
       } else {
-        setError("Failed to convert PDF. Please try another file.")
+        addToast("Failed to convert PDF. Please try another file.", "error")
       }
     } finally {
       setUploading(false)
@@ -215,7 +205,6 @@ export default function PDFToWord() {
 
   const handleReset = () => {
     setFile(null)
-    setError(null)
     setSuccess(false)
     if (downloadUrl) {
       URL.revokeObjectURL(downloadUrl)
@@ -235,22 +224,18 @@ export default function PDFToWord() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-green-50 py-8 px-4">
+    <div className="min-h-screen bg-slate-50 py-8 px-4">
       <div className="max-w-md mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          {/* Header */}
+        <div className="card p-6">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">PDF to Word</h1>
-            <p className="text-gray-600 text-sm">
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">PDF to Word</h1>
+            <p className="text-slate-500 text-sm">
               Convert PDF to Word document
             </p>
           </div>
 
-          {/* File Upload */}
           <div
-            className={`border-2 border-dashed rounded-lg mb-6 ${
-              file ? "border-green-400 bg-green-50" : "border-gray-300 hover:border-green-300"
-            }`}
+            className={`dropzone ${file ? 'dropzone-active' : 'dropzone-idle'} p-6`}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
           >
@@ -262,49 +247,34 @@ export default function PDFToWord() {
                 onChange={handleFileChange}
                 className="hidden"
               />
-              
+
               {file ? (
                 <div>
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <FileText className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <FileText className="w-6 h-6 text-indigo-600" />
                   </div>
-                  <div className="font-medium text-gray-900 truncate mb-1">{file.name}</div>
-                  <div className="text-sm text-gray-600">{formatFileSize(file.size)}</div>
+                  <div className="font-medium text-slate-800 truncate mb-1">{file.name}</div>
+                  <div className="text-sm text-slate-500">{formatFileSize(file.size)}</div>
                 </div>
               ) : (
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="w-full"
                 >
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Upload className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Upload className="w-6 h-6 text-indigo-600" />
                   </div>
-                  <div className="text-gray-700">Select PDF file</div>
-                  <div className="text-sm text-gray-500 mt-1">or drag and drop</div>
+                  <div className="text-slate-700">Select PDF file</div>
+                  <div className="text-sm text-slate-400 mt-1">or drag and drop</div>
                 </button>
               )}
             </div>
           </div>
 
-          {/* Error */}
-          {error && (
-            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-              <div className="flex items-center">
-                <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-                <span>{error}</span>
-              </div>
-            </div>
-          )}
-
-          {/* Convert Button */}
           <button
             onClick={handleSubmit}
             disabled={uploading || !file}
-            className={`w-full py-3 rounded-lg font-medium mb-4 ${
-              uploading || !file
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-green-600 text-white hover:bg-green-700"
-            }`}
+            className={`w-full mt-6 ${uploading || !file ? 'btn-disabled' : 'btn-primary'}`}
           >
             {uploading ? (
               <Loader2 className="w-5 h-5 animate-spin mx-auto" />
@@ -313,16 +283,15 @@ export default function PDFToWord() {
             )}
           </button>
 
-          {/* Download Section */}
           {success && downloadUrl && (
-            <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="mb-4 mt-6">
               <div className="flex items-center mb-3">
-                <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                <span className="font-medium text-green-800">Ready to download</span>
+                <CheckCircle className="w-5 h-5 text-emerald-600 mr-2" />
+                <span className="font-medium text-slate-800">Ready to download</span>
               </div>
               <button
                 onClick={handleDownload}
-                className="w-full py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center"
+                className="btn-primary w-full"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Download Word Document
@@ -330,40 +299,33 @@ export default function PDFToWord() {
             </div>
           )}
 
-          {/* Reset Button */}
           {file && (
             <button
               onClick={handleReset}
-              className="w-full py-2.5 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="w-full mt-4 btn-secondary"
             >
               <RefreshCw className="w-4 h-4 inline mr-2" />
               Convert Another File
             </button>
           )}
 
-          {/* Back Link */}
-          <div className="mt-6 pt-4 border-t text-center">
-            <Link
-              href="/"
-              className="text-blue-600 hover:text-blue-800 text-sm"
-            >
+          <div className="mt-6 pt-4 border-t border-slate-200 text-center">
+            <Link href="/" className="link-brand text-sm">
               ← Back to All Tools
             </Link>
           </div>
         </div>
 
-        {/* Info */}
-        <div className="mt-4 text-center text-xs text-gray-500">
-          <p>• Files never leave your browser</p>
-          <p>• No watermarks or headers added</p>
-          <p>• Maximum file size: 10MB</p>
+        <div className="mt-4 text-center text-xs text-slate-500">
+          <p>— Files never leave your browser</p>
+          <p>— No watermarks or headers added</p>
+          <p>— Maximum file size: 10MB</p>
         </div>
       </div>
     </div>
   )
 }
 
-// Add global type
 declare global {
   interface Window {
     pdfjsLib: any;

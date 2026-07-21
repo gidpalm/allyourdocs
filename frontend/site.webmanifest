@@ -1,11 +1,11 @@
 {
-  "name": "AllYourDocs.pro - Free PDF Tools",
+  "name": "AllYourDocs - Free PDF Tools",
   "short_name": "AllYourDocs",
-  "description": "Free online PDF tools with 100% private processing",
+  "description": "Free online PDF tools with 100% private browser-based processing",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#2563eb",
+  "background_color": "#0a0a0a",
+  "theme_color": "#fbbf24",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -13,7 +13,7 @@
       "type": "image/png"
     },
     {
-      "src": "/android-chrome-512x512.png", 
+      "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }

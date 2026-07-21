@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import mammoth from 'mammoth';
 import { jsPDF } from 'jspdf';
 import { Download, AlertCircle, CheckCircle, Loader2, FileText } from 'lucide-react';
+import { useToast } from "@/components/ToastProvider";
 
 // Import html2canvas dynamically to avoid SSR issues
 let html2canvas: any = null;
@@ -17,11 +18,10 @@ if (typeof window !== 'undefined') {
 export default function WordToPDF() {
   const [converting, setConverting] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [conversionTime, setConversionTime] = useState<number | null>(null);
+  const { addToast } = useToast();
   
   const tempContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -40,8 +40,6 @@ export default function WordToPDF() {
     if (!uploadedFile) return;
     
     setFile(uploadedFile);
-    setError(null);
-    setSuccess(false);
     setPdfBlob(null);
     setConversionTime(null);
     
@@ -56,8 +54,6 @@ export default function WordToPDF() {
     if (!file || !html2canvas) return;
     
     setConverting(true);
-    setError(null);
-    setSuccess(false);
     setConversionTime(null);
     
     const startTime = Date.now();
@@ -219,16 +215,13 @@ export default function WordToPDF() {
         const pdfBlob = pdf.output('blob');
         const url = URL.createObjectURL(pdfBlob);
         
-        setPdfBlob(pdfBlob);
         setDownloadUrl(url);
-        setSuccess(true);
         setConversionTime(Date.now() - startTime);
         
         // Clean up
         document.body.removeChild(tempDiv);
         
-        // Show success alert
-        alert(`✅ Conversion successful! ${pageNumber} page${pageNumber !== 1 ? 's' : ''} created. Click "Download PDF" to save.`);
+        addToast(`Conversion successful! ${pageNumber} page${pageNumber !== 1 ? 's' : ''} created.`, "success")
         
       } catch (canvasError: any) {
         console.error('Canvas conversion error:', canvasError);
@@ -236,11 +229,12 @@ export default function WordToPDF() {
         // Fallback: Create simple text-based PDF
         console.log('Trying fallback text conversion...');
         await createTextOnlyPDF(result.value, file.name);
+        addToast("Document converted to text-based PDF (images not preserved).", "success")
       }
       
     } catch (error: any) {
       console.error('Conversion failed:', error);
-      setError(`Conversion failed: ${error.message || 'Unknown error'}. Try a simpler document.`);
+      addToast(`Conversion failed: ${error.message || 'Unknown error'}. Try a simpler document.`, "error")
     } finally {
       setConverting(false);
     }
@@ -294,12 +288,10 @@ export default function WordToPDF() {
     const pdfBlob = pdf.output('blob');
     const url = URL.createObjectURL(pdfBlob);
     
-    setPdfBlob(pdfBlob);
     setDownloadUrl(url);
-    setSuccess(true);
-    setConversionTime(Date.now() - Date.now()); // Rough estimate
+    setConversionTime(Date.now() - Date.now());
     
-    alert('✅ Document converted to text-based PDF (images not preserved). Click "Download PDF" to save.');
+    addToast("Document converted to text-based PDF (images not preserved).", "success")
   };
 
   const handleDownload = () => {
@@ -315,8 +307,6 @@ export default function WordToPDF() {
 
   const handleReset = () => {
     setFile(null);
-    setError(null);
-    setSuccess(false);
     setPdfBlob(null);
     setConversionTime(null);
     
@@ -409,34 +399,7 @@ export default function WordToPDF() {
             </div>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
-              <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <div className="font-medium">Conversion Error</div>
-                <div className="text-sm mt-1">{error}</div>
-              </div>
-            </div>
-          )}
-
-          {/* Success Message */}
-          {success && (
-            <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
-              <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <div className="font-medium">Conversion successful!</div>
-                <div className="text-sm mt-1">
-                  PDF is ready to download.
-                  {conversionTime && (
-                    <span className="ml-2">Processed in {formatTime(conversionTime)}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Action Buttons */}
+           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <button
               onClick={convertToPDF}
@@ -459,15 +422,15 @@ export default function WordToPDF() {
               )}
             </button>
             
-            {success && pdfBlob && (
-              <button
-                onClick={handleDownload}
-                className="flex-1 px-6 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
-              >
-                <Download className="w-5 h-5 mr-2" />
-                Download PDF
-              </button>
-            )}
+              {pdfBlob && (
+                <button
+                  onClick={handleDownload}
+                  className="flex-1 px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  Download PDF
+                </button>
+              )}
             
             <button
               onClick={handleReset}
@@ -477,9 +440,9 @@ export default function WordToPDF() {
             </button>
           </div>
 
-          {/* Conversion Details */}
-          {success && pdfBlob && (
-            <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl border border-blue-200">
+           {/* Conversion Details */}
+           {pdfBlob && (
+             <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl border border-blue-200">
               <div className="flex flex-col sm:flex-row items-center justify-between">
                 <div className="flex items-center mb-4 sm:mb-0">
                   <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mr-4 shadow-sm">

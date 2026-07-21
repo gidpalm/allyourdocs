@@ -1,130 +1,125 @@
-﻿import Link from "next/link"
-import { CheckCircle, Users, Shield, Zap, Globe } from "lucide-react"
+import Link from "next/link"
+import { CheckCircle, Users, Shield, Zap, Globe, ArrowRight } from "lucide-react"
 
 export const metadata = {
-  title: "About Us - AllYourDocs.pro",
-  description: "Learn about AllYourDocs.pro - Free online PDF tools for everyone.",
+  title: "About Us - AllYourDocs",
+  description: "Learn about AllYourDocs - a free, privacy-first platform for online PDF and document tools.",
 }
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero Section */}
-      <section className="pt-24 pb-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            About <span className="text-blue-600">AllYourDocs.pro</span>
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-4xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <section className="text-center mb-12">
+          <span className="badge badge-brand mb-4">Our Mission</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+            About <span className="text-indigo-600">AllYourDocs</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto">
-            We're on a mission to make document conversion and management simple, free, and accessible to everyone.
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            We&apos;re on a mission to make document conversion simple, free, and private for everyone.
           </p>
-        </div>
-      </section>
+        </section>
 
-      {/* Our Story */}
-      <section className="py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
-            <div className="flex items-center mb-8">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                <Users className="w-6 h-6 text-blue-600" />
+        <section className="mb-12">
+          <div className="card p-8 md:p-12">
+            <div className="flex items-center mb-6">
+              <div className="icon-tile-muted w-12 h-12 mr-4">
+                <Users className="w-6 h-6" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900">Our Story</h2>
+              <h2 className="text-3xl font-bold text-slate-900">Our Story</h2>
             </div>
-            <div className="space-y-6 text-gray-700 text-lg">
+            <div className="space-y-5 text-slate-600 text-lg leading-relaxed">
               <p>
-                AllYourDocs.pro was born out of frustration with expensive, complicated document tools. We noticed that people were paying monthly subscriptions just to perform simple tasks like converting PDFs or merging documents.
+                AllYourDocs was born out of frustration with expensive, complicated document tools. We noticed people
+                paying monthly subscriptions just to perform simple tasks like converting PDFs or merging documents.
               </p>
               <p>
-                In 2023, we set out to create a better solution - a collection of powerful, easy-to-use document tools that would be completely free, with no hidden costs or registration requirements.
+                We set out to create a better solution: powerful, easy-to-use document tools that are completely
+                free, with no hidden costs or registration. Most importantly, every tool runs entirely in your
+                browser, so your files never leave your device.
               </p>
               <p>
-                Today, we serve thousands of users every month, helping students, professionals, and businesses manage their documents efficiently without breaking the bank.
+                Today we serve many users every month, helping students, professionals, and businesses manage
+                their documents efficiently without compromising on privacy.
               </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Our Values */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Our Values</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-              <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-6">
-                <Zap className="w-7 h-7 text-green-600" />
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold text-center text-slate-900 mb-10">Our Values</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="card p-8">
+              <div className="icon-tile-muted w-14 h-14 mb-6">
+                <Zap className="w-7 h-7" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Free Forever</h3>
-              <p className="text-gray-600">
-                We believe essential document tools should be accessible to everyone. Our tools will always remain free, with no paywalls or premium features.
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Free Forever</h3>
+              <p className="text-slate-600">
+                Essential document tools should be accessible to everyone. No paywalls, no premium tiers.
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-              <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
-                <Shield className="w-7 h-7 text-purple-600" />
+            <div className="card p-8">
+              <div className="icon-tile-muted w-14 h-14 mb-6">
+                <Shield className="w-7 h-7" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Privacy First</h3>
-              <p className="text-gray-600">
-                Your documents are processed securely in your browser. We never store, share, or access your files. Your privacy is our top priority.
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Privacy First</h3>
+              <p className="text-slate-600">
+                Your documents are processed in your browser. We never store, share, or access your files.
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
-                <Globe className="w-7 h-7 text-blue-600" />
+            <div className="card p-8">
+              <div className="icon-tile-muted w-14 h-14 mb-6">
+                <Globe className="w-7 h-7" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Accessibility</h3>
-              <p className="text-gray-600">
-                We design our tools to be simple and intuitive, ensuring everyone can use them regardless of technical expertise.
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Accessible</h3>
+              <p className="text-slate-600">
+                Simple, intuitive tools anyone can use, regardless of technical expertise or device.
               </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Features */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Why Choose Us?</h2>
-          <div className="space-y-6">
-            {[
-              "No registration required - use our tools instantly",
-              "100% free - no hidden costs or subscriptions",
-              "Browser-based processing - your files never leave your computer",
-              "No watermarks on output files",
-              "Support for all major document formats",
-              "Fast processing with no file size limits",
-              "Mobile-friendly interface",
-              "Regular updates with new features"
-            ].map((feature, index) => (
-              <div key={index} className="flex items-center bg-white p-4 rounded-lg shadow-sm">
-                <CheckCircle className="w-6 h-6 text-green-500 mr-4 flex-shrink-0" />
-                <span className="text-gray-800">{feature}</span>
-              </div>
-            ))}
+        <section className="mb-12">
+          <div className="card p-8 md:p-12">
+            <h2 className="text-3xl font-bold text-center text-slate-900 mb-10">Why Choose Us?</h2>
+            <div className="space-y-4">
+              {[
+                "No registration required — use our tools instantly.",
+                "100% free — no hidden costs or subscriptions.",
+                "Browser-based processing — your files never leave your computer.",
+                "No watermarks on output files.",
+                "Support for all major document formats.",
+                "Fast processing with generous file size limits.",
+                "Mobile-friendly, responsive interface.",
+                "Regular updates with new features and tools.",
+              ].map((feature, index) => (
+                <div key={index} className="flex items-start bg-slate-50 p-4 rounded-xl border border-slate-200">
+                  <CheckCircle className="w-6 h-6 text-emerald-600 mr-4 flex-shrink-0" />
+                  <span className="text-slate-700">{feature}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA */}
-      <section className="py-16 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 md:p-12">
-            <h2 className="text-3xl font-bold text-white mb-6">Ready to Simplify Your Document Workflow?</h2>
-            <p className="text-blue-100 text-lg mb-8">
-              Join thousands of satisfied users who trust AllYourDocs.pro for their document needs.
+        <section>
+          <div className="text-center card p-8 md:p-12 bg-indigo-600 text-white">
+            <h2 className="text-3xl font-bold mb-4">Ready to Simplify Your Document Workflow?</h2>
+            <p className="text-indigo-100 text-lg mb-8 max-w-2xl mx-auto">
+              Join thousands of users who trust AllYourDocs for their document needs.
             </p>
             <Link
-              href="/"
-              className="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors"
+              href="/tools"
+              className="inline-block bg-white text-indigo-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-100 transition-colors"
             >
               Explore Our Tools
+              <ArrowRight className="w-5 h-5 inline ml-2" />
             </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   )
 }

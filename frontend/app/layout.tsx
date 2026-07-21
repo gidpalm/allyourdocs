@@ -1,46 +1,33 @@
-﻿import type { Metadata, Viewport } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import Navigation from "@/components/Navigation"
 import Footer from "@/components/Footer"
+import Script from "next/script"
+import { ThemeProvider } from "@/components/ThemeProvider"
+import { ToastProvider } from "@/components/ToastProvider"
+import AdSense from "@/components/Adsense"
 
 const inter = Inter({ 
   subsets: ["latin"],
-  display: 'swap',
   variable: '--font-inter',
 })
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5,
-  themeColor: '#2563eb',
+  themeColor: '#fbbf24',
 }
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://allyourdocs.com'),
   title: {
-    default: "AllYourDocs.com - Free Online PDF Tools",
-    template: "%s | AllYourDocs.com"
+    default: "AllYourDocs - Free Online PDF & Document Tools",
+    template: "%s | AllYourDocs"
   },
-  description: "Free, secure PDF tools. Merge, split, convert PDFs online. 100% private processing - files never leave your computer. No registration required.",
-  keywords: [
-    "PDF tools", 
-    "free PDF converter", 
-    "merge PDF", 
-    "split PDF", 
-    "PDF to Word", 
-    "Word to PDF",
-    "compress PDF",
-    "image to PDF",
-    "PDF to text",
-    "online PDF editor",
-    "document converter",
-    "free document tools"
-  ],
-  authors: [{ name: "AllYourDocs.com" }],
-  creator: "AllYourDocs.com",
-  publisher: "AllYourDocs.com",
+  description: "Free, secure PDF and document tools. Merge, split, compress, convert, and edit files online. 100% private, browser-based processing.",
+  keywords: ["PDF tools", "merge PDF", "split PDF", "compress PDF", "PDF converter", "Word to PDF", "free PDF editor", "online document tools", "OCR", "image to text"],
+  
   robots: {
     index: true,
     follow: true,
@@ -53,14 +40,13 @@ export const metadata: Metadata = {
     },
   },
   
-  // Open Graph
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://allyourdocs.com",
-    title: "AllYourDocs.com - Free Online PDF Tools",
-    description: "Free, secure PDF tools. 100% private processing - files never leave your computer.",
-    siteName: "AllYourDocs.com",
+    title: "AllYourDocs - Free Online PDF Tools",
+    description: "Free, secure PDF tools. Merge, split, convert PDFs online.",
+    siteName: "AllYourDocs",
     images: [
       {
         url: "/og-image.png",
@@ -71,29 +57,90 @@ export const metadata: Metadata = {
     ],
   },
   
-  // Twitter
   twitter: {
     card: "summary_large_image",
-    title: "AllYourDocs.com - Free Online PDF Tools",
-    description: "Free, secure PDF tools. 100% private processing.",
+    title: "AllYourDocs - Free Online PDF Tools",
+    description: "Free, secure PDF tools.",
     images: ["/twitter-image.png"],
     creator: "@allyourdocs",
   },
-  
-  // Verification (Update these after setup)
-  verification: {
-    google: "add-your-code-here", // From Google Search Console
-  },
-  
+
   alternates: {
     canonical: "https://allyourdocs.com",
   },
-  category: "software",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
+
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
+  }
+}
+
+const webAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AllYourDocs",
+  "url": "https://allyourdocs.com",
+  "description": "Free online PDF tools with 100% private processing",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
   },
+  "featureList": [
+    "Merge PDF",
+    "Split PDF", 
+    "PDF to Word",
+    "Word to PDF",
+    "Compress PDF",
+    "Image to PDF",
+    "Rearrange PDF",
+    "PDF to Text",
+    "Image to Text"
+  ],
+  "author": {
+    "@type": "Organization",
+    "name": "AllYourDocs"
+  }
+}
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is AllYourDocs.com really free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. All tools are completely free with no hidden costs, watermarks, or registration required."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are my files secure and private?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "100% secure and private. All processing happens directly in your browser and files are never uploaded to any server."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What file types do you support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We support PDF, DOC, DOCX, images (JPG, PNG), and more."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a file size limit?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most tools support files up to 50MB."
+      }
+    }
+  ]
 }
 
 export default function RootLayout({
@@ -101,134 +148,83 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const isProduction = process.env.NODE_ENV === 'production'
+  
   return (
-    <html lang="en" className={`${inter.variable} scroll-smooth`}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": "AllYourDocs.com",
-              "url": "https://allyourdocs.com",
-              "description": "Free online PDF tools with 100% private processing",
-              "applicationCategory": "UtilityApplication",
-              "operatingSystem": "Any",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD"
-              },
-              "featureList": [
-                "Merge PDF",
-                "Split PDF", 
-                "PDF to Word",
-                "Word to PDF",
-                "Compress PDF",
-                "Image to PDF",
-                "PDF to Images"
-              ],
-              "author": {
-                "@type": "Organization",
-                "name": "AllYourDocs.com"
-              }
-            })
-          }}
-        />
+        <meta name="google-adsense-account" content="ca-pub-9089093304511732" />
+        <meta name="google-site-verification" content={process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || ""} />
         
-        {/* FAQ Schema */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              "mainEntity": [
-                {
-                  "@type": "Question",
-                  "name": "Is AllYourDocs.com really free?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Yes! All tools are completely free with no hidden costs, watermarks, or registration required. You can use all features without creating an account."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Are my files secure and private?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "100% secure and private. All processing happens directly in your browser - files never leave your computer. We never upload, store, or access your documents."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "What file types do you support?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "We support PDF, DOC, DOCX, images (JPG, PNG), and more. Our tools can convert between these formats while maintaining quality."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Is there a file size limit?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Most tools support files up to 50MB. For best performance, we recommend files under 20MB."
-                  }
-                }
-              ]
-            })
-          }}
-        />
-        
-        {/* Favicon */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
         
-        {/* Preconnect to important domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+        
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="format-detection" content="telephone=no" />
+        
+        <script
+          id="webapp-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(webAppSchema)
+          }}
+          suppressHydrationWarning
+        />
+        
+        <script
+          id="faq-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(faqSchema)
+          }}
+          suppressHydrationWarning
+        />
       </head>
-      <body className={`${inter.className} antialiased bg-white text-gray-900 min-h-screen flex flex-col`}>
-        {/* Skip navigation for accessibility */}
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50 font-medium shadow-lg"
-        >
-          Skip to main content
-        </a>
+      <body className={`${inter.className} bg-[var(--bg)] text-[var(--text)] min-h-screen flex flex-col antialiased`}>
+        <ThemeProvider>
+          <ToastProvider>
+            <Navigation />
+            <main id="main-content" className="flex-grow w-full">
+              {children}
+            </main>
+            <Footer />
+          </ToastProvider>
+        </ThemeProvider>
         
-        <Navigation />
-        <main id="main-content" className="flex-grow">
-          {children}
-        </main>
-        <Footer />
+        <AdSense />
         
-        {/* No-JavaScript warning */}
         <noscript>
-          <div className="fixed inset-0 bg-gradient-to-br from-red-50 to-pink-50 z-50 flex items-center justify-center p-4">
-            <div className="max-w-md bg-white p-8 rounded-2xl shadow-2xl border border-red-200">
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
-                  <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.698-.833-2.464 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">JavaScript Required</h2>
-              </div>
-              <p className="text-gray-700 mb-4">
-                <strong>AllYourDocs.com requires JavaScript to function.</strong> Our tools process files directly in your browser for maximum privacy and security.
-              </p>
-              <p className="text-gray-600">
-                Please enable JavaScript in your browser settings to use our free PDF tools.
+          <div className="fixed inset-0 bg-[var(--bg)] z-50 flex items-center justify-center p-4">
+            <div className="text-center p-8 border border-[var(--border)] rounded-lg bg-[var(--surface)] max-w-md shadow-xl">
+              <h2 className="text-xl font-bold text-[var(--text)] mb-4">JavaScript Required</h2>
+              <p className="text-[var(--text-muted)] mb-4">Please enable JavaScript to use our tools.</p>
+              <p className="text-sm text-[var(--text-subtle)]">
+                Our tools run directly in your browser for maximum privacy and security.
               </p>
             </div>
           </div>
         </noscript>
+        
+        {isProduction && (
+          <Script
+            id="analytics"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_GA4_ID || 'YOUR-GA4-ID'}');
+              `,
+            }}
+          />
+        )}
       </body>
     </html>
   )

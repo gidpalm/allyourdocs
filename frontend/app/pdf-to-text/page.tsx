@@ -1,21 +1,21 @@
-﻿"use client"
+"use client"
 
 import { useState, useRef, ChangeEvent, FormEvent, DragEvent } from "react"
 import Link from "next/link"
 import { Upload, FileText, Download, AlertCircle, CheckCircle, Loader2, RefreshCw, Copy, Check } from "lucide-react"
+import { useToast } from "@/components/ToastProvider"
 
 export default function PDFToText() {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
   const [extractedText, setExtractedText] = useState<string>("")
   const [copySuccess, setCopySuccess] = useState(false)
+  const { addToast } = useToast()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Dynamically load PDF.js
+  
   const loadPdfLib = async () => {
     if (typeof window === 'undefined') return null
     
@@ -47,18 +47,16 @@ export default function PDFToText() {
                    selectedFile.name.toLowerCase().endsWith('.pdf')
       
       if (!isPdf) {
-        setError("Only PDF files are supported (.pdf)")
+        addToast("Only PDF files are supported (.pdf)", "error")
         return
       }
       
       if (selectedFile.size > 10 * 1024 * 1024) {
-        setError("File size exceeds 10MB limit")
+        addToast("File size exceeds 10MB limit", "error")
         return
       }
       
       setFile(selectedFile)
-      setError(null)
-      setSuccess(false)
       setExtractedText("")
       setCopySuccess(false)
     }
@@ -117,13 +115,11 @@ export default function PDFToText() {
     e.preventDefault()
     
     if (!file) {
-      setError("Please select a PDF file")
+      addToast("Please select a PDF file", "error")
       return
     }
 
     setUploading(true)
-    setError(null)
-    setSuccess(false)
     setExtractedText("")
     setCopySuccess(false)
 
@@ -133,19 +129,19 @@ export default function PDFToText() {
       // Extract text
       const text = await extractTextFromPDF(file)
       setExtractedText(text)
-      setSuccess(true)
+      addToast("Text extracted successfully!", "success")
       
     } catch (err: any) {
       console.error("Extraction error:", err)
       
       if (err.message.includes("password")) {
-        setError("Cannot extract text from password-protected PDFs")
+        addToast("Cannot extract text from password-protected PDFs", "error")
       } else if (err.message.includes("corrupted")) {
-        setError("The PDF file appears to be corrupted")
+        addToast("The PDF file appears to be corrupted", "error")
       } else if (err.message.includes("format")) {
-        setError("Unsupported PDF format")
+        addToast("Unsupported PDF format", "error")
       } else {
-        setError("Failed to extract text. Please try another file.")
+        addToast("Failed to extract text. Please try another file.", "error")
       }
     } finally {
       setUploading(false)
@@ -182,8 +178,6 @@ export default function PDFToText() {
 
   const handleReset = () => {
     setFile(null)
-    setError(null)
-    setSuccess(false)
     setExtractedText("")
     setCopySuccess(false)
     if (fileInputRef.current) {
@@ -200,13 +194,13 @@ export default function PDFToText() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 py-8 px-4">
+    <div className="min-h-screen bg-slate-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="card p-6">
           {/* Header */}
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">PDF to Text</h1>
-            <p className="text-gray-600">
+            <h1 className="text-2xl font-bold text-indigo-600 mb-2">PDF to Text</h1>
+            <p className="text-slate-600">
               Extract text from PDF files - preserves page structure
             </p>
           </div>
@@ -217,7 +211,7 @@ export default function PDFToText() {
               {/* File Upload */}
               <div
                 className={`border-2 border-dashed rounded-lg mb-4 ${
-                  file ? "border-blue-400 bg-blue-50" : "border-gray-300 hover:border-blue-300"
+                  file ? "border-indigo-500 bg-indigo-50" : "border-slate-200 hover:border-indigo-500"
                 }`}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
@@ -233,37 +227,27 @@ export default function PDFToText() {
                   
                   {file ? (
                     <div>
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <FileText className="w-6 h-6 text-blue-600" />
+                      <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <FileText className="w-6 h-6 text-indigo-600" />
                       </div>
-                      <div className="font-medium text-gray-900 truncate mb-1">{file.name}</div>
-                      <div className="text-sm text-gray-600">{formatFileSize(file.size)}</div>
+                      <div className="font-medium text-indigo-600 truncate mb-1">{file.name}</div>
+                      <div className="text-sm text-slate-600">{formatFileSize(file.size)}</div>
                     </div>
                   ) : (
                     <button
                       onClick={() => fileInputRef.current?.click()}
                       className="w-full"
                     >
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <Upload className="w-6 h-6 text-blue-600" />
+                      <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Upload className="w-6 h-6 text-indigo-600" />
                       </div>
-                      <div className="text-gray-700">Select PDF file</div>
-                      <div className="text-sm text-gray-500 mt-1">or drag and drop</div>
-                      <div className="text-xs text-gray-400 mt-2">Max 10MB</div>
+                      <div className="text-slate-600">Select PDF file</div>
+                      <div className="text-sm text-slate-500 mt-1">or drag and drop</div>
+                      <div className="text-xs text-slate-400 mt-2">Max 10MB</div>
                     </button>
                   )}
                 </div>
               </div>
-
-              {/* Error */}
-              {error && (
-                <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                  <div className="flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-                    <span>{error}</span>
-                  </div>
-                </div>
-              )}
 
               {/* Convert Button */}
               <button
@@ -271,8 +255,8 @@ export default function PDFToText() {
                 disabled={uploading || !file}
                 className={`w-full py-3 rounded-lg font-medium mb-4 ${
                   uploading || !file
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
+                    ? "bg-gray-300 text-slate-500 cursor-not-allowed"
+                    : "bg-indigo-600 text-white hover:bg-indigo-700"
                 }`}
               >
                 {uploading ? (
@@ -283,7 +267,7 @@ export default function PDFToText() {
               </button>
 
               {/* Action Buttons */}
-              {success && extractedText && (
+              {extractedText && (
                 <div className="space-y-3">
                   <button
                     onClick={handleCopyText}
@@ -316,7 +300,7 @@ export default function PDFToText() {
               {file && (
                 <button
                   onClick={handleReset}
-                  className="w-full py-2.5 mt-3 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="w-full py-2.5 mt-3 text-slate-600 hover:text-slate-800 border border-slate-200 rounded-lg hover:bg-slate-100"
                 >
                   <RefreshCw className="w-4 h-4 inline mr-2" />
                   Process Another File
@@ -327,9 +311,9 @@ export default function PDFToText() {
               <div className="mt-6 pt-4 border-t">
                 <Link
                   href="/"
-                  className="text-blue-600 hover:text-blue-800 text-sm flex items-center justify-center"
+                  className="text-indigo-600 hover:text-slate-500 text-sm flex items-center justify-center"
                 >
-                  ← Back to All Tools
+                  ? Back to All Tools
                 </Link>
               </div>
             </div>
@@ -338,24 +322,24 @@ export default function PDFToText() {
             <div>
               <div className="h-full flex flex-col">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-gray-900">Extracted Text</h3>
+                  <h3 className="font-medium text-indigo-600">Extracted Text</h3>
                   {extractedText && (
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-slate-500">
                       {extractedText.split(/\s+/).length} words, {extractedText.length} characters
                     </div>
                   )}
                 </div>
 
-                <div className="flex-1 border border-gray-300 rounded-lg overflow-hidden bg-gray-50">
-                  {success && extractedText ? (
+                <div className="flex-1 border border-slate-200 rounded-lg overflow-hidden bg-slate-100">
+                  {extractedText ? (
                     <textarea
                       ref={textAreaRef}
                       value={extractedText}
                       readOnly
-                      className="w-full h-full p-4 text-gray-800 bg-white resize-none focus:outline-none min-h-[300px] md:min-h-[400px] font-mono text-sm"
+                      className="w-full h-full p-4 text-slate-800 bg-slate-100 resize-none focus:outline-none min-h-[300px] md:min-h-[400px] font-mono text-sm"
                     />
                   ) : (
-                    <div className="h-full flex flex-col items-center justify-center p-8 text-gray-400">
+                    <div className="h-full flex flex-col items-center justify-center p-8 text-slate-400">
                       <FileText className="w-12 h-12 mb-3 opacity-50" />
                       <p className="text-center">
                         {file 
@@ -365,32 +349,17 @@ export default function PDFToText() {
                     </div>
                   )}
                 </div>
-
-                {/* Success Message */}
-                {success && (
-                  <div className="mt-3 bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-green-600 mr-2 flex-shrink-0" />
-                      <div>
-                        <span className="font-medium text-green-800">Text extracted successfully!</span>
-                        <p className="text-green-700 text-sm mt-1">
-                          Text is ready to copy or download. Page numbers are preserved.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>
         </div>
 
         {/* Info */}
-        <div className="mt-4 text-center text-xs text-gray-500">
-          <p>• 100% private - processing happens in your browser only</p>
-          <p>• No text limits - extract all text from your PDF</p>
-          <p>• Preserves page structure with page markers</p>
-          <p>• Maximum file size: 10MB</p>
+        <div className="mt-4 text-center text-xs text-slate-500">
+          <p>— 100% private - processing happens in your browser only</p>
+          <p>— No text limits - extract all text from your PDF</p>
+          <p>— Preserves page structure with page markers</p>
+          <p>— Maximum file size: 10MB</p>
         </div>
       </div>
     </div>
@@ -403,3 +372,7 @@ declare global {
     pdfjsLib: any;
   }
 }
+
+
+
+

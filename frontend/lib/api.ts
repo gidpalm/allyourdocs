@@ -1,15 +1,15 @@
-﻿const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+﻿// lib/api.ts
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
 
 // Constants for file size limits
 export const FILE_LIMITS = {
-  MAX_SINGLE_FILE_SIZE: 25 * 1024 * 1024, // 25MB per file
-  MAX_TOTAL_UPLOAD_SIZE: 100 * 1024 * 1024, // 100MB total for multiple files
-  MAX_FILES_COUNT: 20, // Maximum number of files users can upload
-  MAX_IMAGES_COUNT: 20, // Maximum number of images
-  MAX_MERGE_FILES: 20, // Maximum number of PDFs for merging
+  MAX_SINGLE_FILE_SIZE: 25 * 1024 * 1024,
+  MAX_TOTAL_UPLOAD_SIZE: 100 * 1024 * 1024,
+  MAX_FILES_COUNT: 20,
+  MAX_IMAGES_COUNT: 20,
+  MAX_MERGE_FILES: 20,
 } as const;
 
-// Allowed file types
 export const ALLOWED_FILE_TYPES = {
   PDF: ['application/pdf', '.pdf'],
   WORD: [
@@ -64,18 +64,15 @@ export const validateMultipleFiles = (
 ): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
 
-  // Check file count
   if (files.length > maxCount) {
     errors.push(`Maximum ${maxCount} files allowed. You selected ${files.length} files.`);
   }
 
-  // Check total size
   const totalSize = files.reduce((sum, file) => sum + file.size, 0);
   if (totalSize > maxTotalSize) {
     errors.push(`Total file size exceeds ${formatFileSize(maxTotalSize)} limit. Current total: ${formatFileSize(totalSize)}`);
   }
 
-  // Check individual file sizes
   files.forEach((file) => {
     if (!validateFileSize(file)) {
       errors.push(`File "${file.name}" exceeds ${formatFileSize(FILE_LIMITS.MAX_SINGLE_FILE_SIZE)} limit. Size: ${formatFileSize(file.size)}`);
@@ -88,18 +85,99 @@ export const validateMultipleFiles = (
   };
 };
 
-// Helper to chunk files for large uploads
-export const chunkFiles = (files: File[], chunkSize: number = 5): File[][] => {
-  const chunks: File[][] = [];
-  for (let i = 0; i < files.length; i += chunkSize) {
-    chunks.push(files.slice(i, i + chunkSize));
+// Rate limiting helper for API calls
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+export const checkClientRateLimit = (endpoint: string): { success: boolean; remaining?: number; resetTime?: number } => {
+  const now = Date.now();
+  const windowMs = parseInt(process.env.NEXT_PUBLIC_RATE_LIMIT_WINDOW_MS || '60000');
+  const maxRequests = parseInt(process.env.NEXT_PUBLIC_RATE_LIMIT_REQUESTS || '10');
+  const key = `api:${endpoint}`;
+
+  const entry = rateLimitStore.get(key);
+  
+  if (!entry || now > entry.resetTime) {
+    rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
+    return { success: true, remaining: maxRequests - 1, resetTime: now + windowMs };
   }
-  return chunks;
+
+  if (entry.count >= maxRequests) {
+    return { success: false, remaining: 0, resetTime: entry.resetTime };
+  }
+
+  entry.count++;
+  rateLimitStore.set(key, entry);
+  return { success: true, remaining: maxRequests - entry.count, resetTime: entry.resetTime };
 };
 
-// Main API functions
+// Helper to make API calls with rate limiting
+const makeApiCall = async <T>(
+  endpoint: string, 
+  options: RequestInit
+): Promise<T> => {
+  // Check rate limit before making the call
+  const rateLimit = checkClientRateLimit(endpoint);
+  
+  if (!rateLimit.success) {
+    throw new Error(`Rate limit exceeded. Please wait before making more requests.`);
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error: errorText };
+      }
+      throw new Error(errorData.error || `Request failed with status ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Helper for file downloads with rate limiting
+const makeFileApiCall = async (
+  endpoint: string, 
+  formData: FormData
+): Promise<Blob> => {
+  const rateLimit = checkClientRateLimit(endpoint);
+  
+  if (!rateLimit.success) {
+    throw new Error(`Rate limit exceeded. Please wait before making more requests.`);
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "POST",
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error: errorText };
+      }
+      throw new Error(errorData.error || `Request failed with status ${response.status}`);
+    }
+    
+    return await response.blob();
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Main API functions with rate limiting
 export const api = {
-  // Merge PDFs - Now supports up to 20 files
   mergePDFs: async (files: File[]) => {
     const validation = validateMultipleFiles(files, FILE_LIMITS.MAX_MERGE_FILES);
     if (!validation.isValid) {
@@ -109,26 +187,9 @@ export const api = {
     const formData = new FormData();
     files.forEach(file => formData.append("pdfs", file));
     
-    const response = await fetch(`${API_BASE_URL}/merge-pdf`, {
-      method: "POST",
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText };
-      }
-      throw new Error(errorData.error || "Failed to merge PDFs");
-    }
-    
-    return await response.blob();
+    return await makeFileApiCall("/merge-pdf", formData);
   },
 
-  // PDF to Word - Single file
   pdfToWord: async (file: File) => {
     if (!validateFileSize(file)) {
       throw new Error(`File size exceeds ${formatFileSize(FILE_LIMITS.MAX_SINGLE_FILE_SIZE)} limit`);
@@ -137,26 +198,9 @@ export const api = {
     const formData = new FormData();
     formData.append("pdf", file);
     
-    const response = await fetch(`${API_BASE_URL}/pdf-to-word`, {
-      method: "POST",
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText };
-      }
-      throw new Error(errorData.error || "Failed to convert PDF to Word");
-    }
-    
-    return await response.blob();
+    return await makeFileApiCall("/pdf-to-word", formData);
   },
 
-  // Word to PDF - Single file
   wordToPDF: async (file: File) => {
     if (!validateFileSize(file)) {
       throw new Error(`File size exceeds ${formatFileSize(FILE_LIMITS.MAX_SINGLE_FILE_SIZE)} limit`);
@@ -165,26 +209,9 @@ export const api = {
     const formData = new FormData();
     formData.append("docx", file);
     
-    const response = await fetch(`${API_BASE_URL}/word-to-pdf`, {
-      method: "POST",
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText };
-      }
-      throw new Error(errorData.error || "Failed to convert Word to PDF");
-    }
-    
-    return await response.blob();
+    return await makeFileApiCall("/word-to-pdf", formData);
   },
 
-  // Extract Text - Single file
   extractText: async (file: File) => {
     if (!validateFileSize(file)) {
       throw new Error(`File size exceeds ${formatFileSize(FILE_LIMITS.MAX_SINGLE_FILE_SIZE)} limit`);
@@ -193,26 +220,12 @@ export const api = {
     const formData = new FormData();
     formData.append("pdf", file);
     
-    const response = await fetch(`${API_BASE_URL}/extract-text`, {
+    return await makeApiCall<{ text: string }>("/extract-text", {
       method: "POST",
       body: formData,
     });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText };
-      }
-      throw new Error(errorData.error || "Failed to extract text");
-    }
-    
-    return await response.json();
   },
 
-  // Detect PDF type - Single file
   detectPDFType: async (file: File) => {
     if (!validateFileSize(file)) {
       throw new Error(`File size exceeds ${formatFileSize(FILE_LIMITS.MAX_SINGLE_FILE_SIZE)} limit`);
@@ -221,26 +234,12 @@ export const api = {
     const formData = new FormData();
     formData.append("pdf", file);
     
-    const response = await fetch(`${API_BASE_URL}/detect-pdf-type`, {
+    return await makeApiCall<{ type: string }>("/detect-pdf-type", {
       method: "POST",
       body: formData,
     });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText };
-      }
-      throw new Error(errorData.error || "Failed to detect PDF type");
-    }
-    
-    return await response.json();
   },
 
-  // Split PDF - Single file
   splitPDF: async (file: File, ranges: string) => {
     if (!validateFileSize(file)) {
       throw new Error(`File size exceeds ${formatFileSize(FILE_LIMITS.MAX_SINGLE_FILE_SIZE)} limit`);
@@ -250,26 +249,9 @@ export const api = {
     formData.append("pdf", file);
     formData.append("ranges", ranges);
     
-    const response = await fetch(`${API_BASE_URL}/split-pdf-ranges`, {
-      method: "POST",
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText };
-      }
-      throw new Error(errorData.error || "Failed to split PDF");
-    }
-    
-    return await response.blob();
+    return await makeFileApiCall("/split-pdf-ranges", formData);
   },
 
-  // Compress PDF - Single file
   compressPDF: async (file: File, quality: number = 70) => {
     if (!validateFileSize(file)) {
       throw new Error(`File size exceeds ${formatFileSize(FILE_LIMITS.MAX_SINGLE_FILE_SIZE)} limit`);
@@ -279,26 +261,9 @@ export const api = {
     formData.append("pdf", file);
     formData.append("quality", quality.toString());
     
-    const response = await fetch(`${API_BASE_URL}/compress-pdf`, {
-      method: "POST",
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText };
-      }
-      throw new Error(errorData.error || "Failed to compress PDF");
-    }
-    
-    return await response.blob();
+    return await makeFileApiCall("/compress-pdf", formData);
   },
 
-  // Images to PDF - Now supports up to 20 images
   imagesToPDF: async (files: File[]) => {
     const validation = validateMultipleFiles(files, FILE_LIMITS.MAX_IMAGES_COUNT);
     if (!validation.isValid) {
@@ -308,26 +273,9 @@ export const api = {
     const formData = new FormData();
     files.forEach(file => formData.append("images", file));
     
-    const response = await fetch(`${API_BASE_URL}/image-to-pdf`, {
-      method: "POST",
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText };
-      }
-      throw new Error(errorData.error || "Failed to create PDF from images");
-    }
-    
-    return await response.blob();
+    return await makeFileApiCall("/image-to-pdf", formData);
   },
 
-  // Image to Text (OCR) - Single file
   imageToText: async (file: File) => {
     if (!validateFileSize(file)) {
       throw new Error(`File size exceeds ${formatFileSize(FILE_LIMITS.MAX_SINGLE_FILE_SIZE)} limit`);
@@ -336,26 +284,12 @@ export const api = {
     const formData = new FormData();
     formData.append("image", file);
     
-    const response = await fetch(`${API_BASE_URL}/image-to-text`, {
+    return await makeApiCall<{ text: string }>("/image-to-text", {
       method: "POST",
       body: formData,
     });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText };
-      }
-      throw new Error(errorData.error || "Failed to extract text from image");
-    }
-    
-    return await response.json();
   },
 
-  // Rearrange PDF - Single file
   rearrangePDF: async (file: File, newOrder: number[]) => {
     if (!validateFileSize(file)) {
       throw new Error(`File size exceeds ${formatFileSize(FILE_LIMITS.MAX_SINGLE_FILE_SIZE)} limit`);
@@ -365,33 +299,16 @@ export const api = {
     formData.append("pdf", file);
     formData.append("newOrder", JSON.stringify(newOrder));
     
-    const response = await fetch(`${API_BASE_URL}/rearrange-pdf`, {
-      method: "POST",
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText };
-      }
-      throw new Error(errorData.error || "Failed to rearrange PDF");
-    }
-    
-    return await response.blob();
+    return await makeFileApiCall("/rearrange-pdf", formData);
   },
 
-  // Batch Word to PDF - Process multiple Word files (up to 20)
+  // Batch operations with rate limiting
   batchWordToPDF: async (files: File[]) => {
     const validation = validateMultipleFiles(files, FILE_LIMITS.MAX_FILES_COUNT);
     if (!validation.isValid) {
       throw new Error(validation.errors.join(', '));
     }
 
-    // Process files sequentially to avoid overwhelming the server
     const results: { fileName: string; blob: Blob | null; error?: string }[] = [];
     
     for (const file of files) {
@@ -399,22 +316,8 @@ export const api = {
         const formData = new FormData();
         formData.append("docx", file);
         
-        const response = await fetch(`${API_BASE_URL}/word-to-pdf`, {
-          method: "POST",
-          body: formData,
-        });
-        
-        if (response.ok) {
-          const blob = await response.blob();
-          results.push({ fileName: file.name, blob });
-        } else {
-          const errorText = await response.text();
-          results.push({ 
-            fileName: file.name, 
-            blob: null, 
-            error: `Failed: ${errorText.slice(0, 100)}...` 
-          });
-        }
+        const blob = await makeFileApiCall("/word-to-pdf", formData);
+        results.push({ fileName: file.name, blob });
       } catch (error: any) {
         results.push({ 
           fileName: file.name, 
@@ -423,14 +326,12 @@ export const api = {
         });
       }
       
-      // Small delay between requests to avoid overwhelming server
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     
     return results;
   },
 
-  // Batch PDF to Word - Process multiple PDF files (up to 20)
   batchPDFToWord: async (files: File[]) => {
     const validation = validateMultipleFiles(files, FILE_LIMITS.MAX_FILES_COUNT);
     if (!validation.isValid) {
@@ -444,22 +345,8 @@ export const api = {
         const formData = new FormData();
         formData.append("pdf", file);
         
-        const response = await fetch(`${API_BASE_URL}/pdf-to-word`, {
-          method: "POST",
-          body: formData,
-        });
-        
-        if (response.ok) {
-          const blob = await response.blob();
-          results.push({ fileName: file.name, blob });
-        } else {
-          const errorText = await response.text();
-          results.push({ 
-            fileName: file.name, 
-            blob: null, 
-            error: `Failed: ${errorText.slice(0, 100)}...` 
-          });
-        }
+        const blob = await makeFileApiCall("/pdf-to-word", formData);
+        results.push({ fileName: file.name, blob });
       } catch (error: any) {
         results.push({ 
           fileName: file.name, 
@@ -468,14 +355,12 @@ export const api = {
         });
       }
       
-      // Small delay between requests
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     
     return results;
   },
 
-  // Batch Compress PDFs - Process multiple PDF files (up to 20)
   batchCompressPDF: async (files: File[], quality: number = 70) => {
     const validation = validateMultipleFiles(files, FILE_LIMITS.MAX_FILES_COUNT);
     if (!validation.isValid) {
@@ -490,22 +375,8 @@ export const api = {
         formData.append("pdf", file);
         formData.append("quality", quality.toString());
         
-        const response = await fetch(`${API_BASE_URL}/compress-pdf`, {
-          method: "POST",
-          body: formData,
-        });
-        
-        if (response.ok) {
-          const blob = await response.blob();
-          results.push({ fileName: file.name, blob });
-        } else {
-          const errorText = await response.text();
-          results.push({ 
-            fileName: file.name, 
-            blob: null, 
-            error: `Failed: ${errorText.slice(0, 100)}...` 
-          });
-        }
+        const blob = await makeFileApiCall("/compress-pdf", formData);
+        results.push({ fileName: file.name, blob });
       } catch (error: any) {
         results.push({ 
           fileName: file.name, 
@@ -514,7 +385,6 @@ export const api = {
         });
       }
       
-      // Small delay between requests
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     
@@ -534,7 +404,6 @@ export const downloadBlob = (blob: Blob, filename: string) => {
   window.URL.revokeObjectURL(url);
 };
 
-// Helper to download multiple files individually
 export const downloadMultipleFiles = (files: { name: string; blob: Blob }[]) => {
   files.forEach(file => {
     if (file.blob) {
@@ -543,12 +412,10 @@ export const downloadMultipleFiles = (files: { name: string; blob: Blob }[]) => 
   });
 };
 
-// Helper to trigger multiple downloads with delay
 export const batchDownloadMultiple = async (files: { name: string; blob: Blob }[]) => {
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     if (file.blob) {
-      // Small delay between downloads to avoid browser restrictions
       if (i > 0) {
         await new Promise(resolve => setTimeout(resolve, 100));
       }
@@ -557,28 +424,23 @@ export const batchDownloadMultiple = async (files: { name: string; blob: Blob }[
   }
 };
 
-// Helper to create a ZIP from multiple files using JSZip
 export const createZipFromFiles = async (files: { name: string; blob: Blob }[]): Promise<Blob> => {
   try {
-    // Dynamic import to avoid SSR issues and bundle optimization
     const JSZip = (await import('jszip')).default;
     const zip = new JSZip();
     
-    // Add files to zip
     files.forEach(file => {
       if (file.blob) {
-        // Clean up file name for ZIP
         const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
         zip.file(cleanName, file.blob);
       }
     });
     
-    // Generate zip file with compression
     const zipBlob = await zip.generateAsync({ 
       type: "blob",
       compression: "DEFLATE",
       compressionOptions: {
-        level: 6 // Medium compression level
+        level: 6
       }
     });
     
@@ -589,7 +451,6 @@ export const createZipFromFiles = async (files: { name: string; blob: Blob }[]):
   }
 };
 
-// Helper to batch download multiple files as ZIP
 export const batchDownloadAsZip = async (
   files: { name: string; blob: Blob }[], 
   zipName: string = "downloads.zip"
@@ -601,11 +462,9 @@ export const batchDownloadAsZip = async (
   } catch (error) {
     console.error('Error downloading ZIP:', error);
     
-    // Fallback to individual downloads if ZIP fails
-    console.log('ZIP creation failed, falling back to individual downloads...');
     try {
       await batchDownloadMultiple(files);
-      return false; // Return false to indicate fallback was used
+      return false;
     } catch (fallbackError) {
       console.error('Fallback download also failed:', fallbackError);
       throw new Error('Failed to download files. Please try downloading individually.');
@@ -613,7 +472,6 @@ export const batchDownloadAsZip = async (
   }
 };
 
-// Helper to get file information
 export const getFileInfo = (file: File) => {
   return {
     name: file.name,
@@ -624,17 +482,14 @@ export const getFileInfo = (file: File) => {
   };
 };
 
-// Helper to filter files by type
 export const filterFilesByType = (files: File[], allowedTypes: string[]): File[] => {
   return files.filter(file => validateFileType(file, allowedTypes));
 };
 
-// Helper to calculate total size of files
 export const calculateTotalSize = (files: File[]): number => {
   return files.reduce((total, file) => total + file.size, 0);
 };
 
-// Helper to format file list for display
 export const formatFileList = (files: File[]): string => {
   if (files.length === 0) return 'No files selected';
   if (files.length === 1) return files[0].name;
@@ -642,7 +497,6 @@ export const formatFileList = (files: File[]): string => {
   return `${files.length} files selected`;
 };
 
-// Type definitions for better TypeScript support
 export interface FileConversionResult {
   fileName: string;
   blob: Blob | null;
@@ -662,12 +516,6 @@ export interface FileInfo {
   lastModified: string;
 }
 
-// Export types for external use
-export type {
-  // Re-export types if needed
-};
-
-// Default export for convenience
 export default {
   api,
   FILE_LIMITS,

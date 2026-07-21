@@ -19,16 +19,16 @@ import {
   RotateCw,
   Maximize2,
   Minimize2,
-  Languages,
   FileCode,
-  Shield,
-  Globe,
   Brain,
-  Battery,
+  Zap,
+  Table,
+  Layout,
   Clock,
-  Zap
+  Globe
 } from "lucide-react";
 import { createWorker } from 'tesseract.js';
+import { useToast } from "@/components/ToastProvider";
 
 interface ImageFile {
   id: string;
@@ -58,8 +58,6 @@ interface OCRSettings {
 export default function ImageToText() {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [results, setResults] = useState<OCRResult[]>([]);
   const [combinedText, setCombinedText] = useState<string>("");
   const [copied, setCopied] = useState(false);
@@ -70,13 +68,14 @@ export default function ImageToText() {
   const [currentProcessingImage, setCurrentProcessingImage] = useState<string>("");
   const [settings, setSettings] = useState<OCRSettings>({
     language: "eng",
-    preserveFormatting: true,
+    preserveFormatting: false,
     includeConfidence: false,
-    pageSegmentation: 'auto',
+    pageSegmentation: 'single_block',
     useMultiLang: false,
   });
   const [isEngineReady, setIsEngineReady] = useState(false);
   const [engineLoadProgress, setEngineLoadProgress] = useState(0);
+  const { addToast } = useToast();
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -149,12 +148,12 @@ export default function ImageToText() {
           console.log("OCR engine ready");
         } catch (loadError: any) {
           console.error("Failed to create worker:", loadError);
-          setError(`Failed to initialize OCR engine: ${loadError.message}. Please refresh the page.`);
+          addToast(`Failed to initialize OCR engine: ${loadError.message}. Please refresh the page.`, "error")
         }
         
       } catch (err: any) {
         console.error("Failed to initialize OCR engine:", err);
-        setError(`Failed to initialize OCR engine: ${err.message}. Please refresh the page.`);
+        addToast(`Failed to initialize OCR engine: ${err.message}. Please refresh the page.`, "error")
       }
     };
 
@@ -183,24 +182,22 @@ export default function ImageToText() {
     );
 
     if (imageFiles.length === 0) {
-      setError("Please select valid image files (JPG, PNG, GIF, BMP, WebP, TIFF)");
+      addToast("Please select valid image files (JPG, PNG, GIF, BMP, WebP, TIFF)", "error")
       return;
     }
 
     if (imageFiles.length > 10) {
-      setError("Maximum 10 images allowed for OCR processing");
+      addToast("Maximum 10 images allowed for OCR processing", "error")
       return;
     }
 
     // Check total size
     const totalSize = imageFiles.reduce((sum, file) => sum + file.size, 0);
     if (totalSize > 50 * 1024 * 1024) {
-      setError("Total file size exceeds 50MB limit");
+      addToast("Total file size exceeds 50MB limit", "error")
       return;
     }
 
-    setError(null);
-    setSuccess(false);
     setResults([]);
     setCombinedText("");
     setOverallProgress(0);
@@ -299,9 +296,9 @@ export default function ImageToText() {
           const langs = languageToUse.split('+');
           const worker = await createWorker(langs[0]);
           for (let i = 1; i < langs.length; i++) {
-            await worker.loadLanguage(langs[i]);
+            await (worker as any).loadLanguage(langs[i]);
           }
-          await worker.initialize(langs.join('+'));
+          await (worker as any).initialize(langs.join('+'));
           workerRef.current = worker;
         } else {
           // Single language
@@ -311,7 +308,7 @@ export default function ImageToText() {
       }
 
       // Set parameters for best document structure preservation
-      await workerRef.current.setParameters({
+      await (workerRef.current as any).setParameters({
         tessedit_pageseg_mode: settings.pageSegmentation === 'single_block' ? 6 : 
                               settings.pageSegmentation === 'single_line' ? 7 :
                               settings.pageSegmentation === 'sparse_text' ? 11 : 3, // 3 = AUTO_OSD
@@ -321,7 +318,7 @@ export default function ImageToText() {
       });
 
       // Perform OCR
-      const result = await workerRef.current.recognize(image.file);
+      const result = await (workerRef.current as any).recognize(image.file);
 
       clearInterval(progressInterval);
       setCurrentImageProgress(100);
@@ -349,18 +346,16 @@ export default function ImageToText() {
     e.preventDefault();
     
     if (images.length === 0) {
-      setError("Please select at least one image");
+      addToast("Please select at least one image", "error")
       return;
     }
 
     if (!isEngineReady) {
-      setError("OCR engine is still loading. Please wait...");
+      addToast("OCR engine is still loading. Please wait...", "error")
       return;
     }
 
     setUploading(true);
-    setError(null);
-    setSuccess(false);
     setResults([]);
     setCombinedText("");
     setOverallProgress(0);
@@ -411,11 +406,11 @@ export default function ImageToText() {
       setOverallProgress(100);
       setResults(allResults);
       setCombinedText(combinedText.trim());
-      setSuccess(true);
+      addToast(`Extracted text from ${images.length} image${images.length !== 1 ? 's' : ''}`, "success")
       
     } catch (err: any) {
       console.error("OCR processing error:", err);
-      setError(err.message || "Failed to extract text from images. Please try again.");
+      addToast(err.message || "Failed to extract text from images. Please try again.", "error")
     } finally {
       setUploading(false);
       setOverallProgress(0);
@@ -495,7 +490,7 @@ export default function ImageToText() {
     if (files.length > 0) {
       const event = {
         target: { files }
-      } as React.ChangeEvent<HTMLInputElement>;
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
       handleFileChange(event);
     }
   };
@@ -505,8 +500,6 @@ export default function ImageToText() {
     images.forEach(image => URL.revokeObjectURL(image.preview));
     
     setImages([]);
-    setError(null);
-    setSuccess(false);
     setResults([]);
     setCombinedText("");
     setCopied(false);
@@ -990,36 +983,6 @@ export default function ImageToText() {
                 </div>
               </div>
 
-              {/* Error Message */}
-              {error && (
-                <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
-                  <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <div className="font-medium">Error</div>
-                    <div className="text-sm mt-1 whitespace-pre-line">{error}</div>
-                  </div>
-                  <button
-                    onClick={() => setError(null)}
-                    className="text-red-700 hover:text-red-900 ml-2"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-
-              {/* Success Message */}
-              {success && (
-                <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
-                  <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <div className="font-medium">OCR completed successfully!</div>
-                    <div className="text-sm mt-1">
-                      Extracted text from {images.length} image{images.length !== 1 ? 's' : ''}
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Action Buttons */}
               <div className="space-y-4">
                 <button
@@ -1049,7 +1012,7 @@ export default function ImageToText() {
                   )}
                 </button>
                 
-                {success && combinedText && (
+                {combinedText && (
                   <>
                     <div className="grid grid-cols-2 gap-3">
                       <button

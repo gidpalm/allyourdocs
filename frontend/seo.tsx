@@ -12,7 +12,7 @@ export default function SEO({
   ogImage = "/og-image.png"
 }: SEOProps) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://allyourdocs.com'
-  const fullTitle = title ? `${title} | AllYourDocs.com` : 'AllYourDocs.com - Free Online PDF Tools'
+  const fullTitle = title ? `${title} | AllYourDocs` : 'AllYourDocs - Free Online PDF Tools'
   const fullDescription = description || 'Free, secure PDF tools. Merge, split, convert PDFs online. 100% private processing.'
   const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl
 

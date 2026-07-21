@@ -3,6 +3,7 @@
 import { useState, useRef, ChangeEvent, FormEvent, DragEvent } from "react"
 import Link from "next/link"
 import { Upload, Image as ImageIcon, Download, AlertCircle, CheckCircle, Loader2, FileText, Trash2, Eye, X, Grid, Settings, ArrowUpDown, Plus, Minus, RefreshCw } from "lucide-react"
+import { useToast } from "@/components/ToastProvider"
 
 interface ImageFile {
   id: string;
@@ -23,8 +24,6 @@ interface PDFSettings {
 export default function ImageToPDF() {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(true);
@@ -34,6 +33,7 @@ export default function ImageToPDF() {
     margin: 10,
     quality: 85
   });
+  const { addToast } = useToast();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -55,24 +55,22 @@ export default function ImageToPDF() {
     );
 
     if (imageFiles.length === 0) {
-      setError("Please select valid image files (JPG, PNG, GIF, BMP, WebP)");
+      addToast("Please select valid image files (JPG, PNG, GIF, BMP, WebP)", "error")
       return;
     }
 
     if (imageFiles.length > 20) {
-      setError("Maximum 20 images allowed");
+      addToast("Maximum 20 images allowed", "error")
       return;
     }
 
     // Check total size
     const totalSize = imageFiles.reduce((sum, file) => sum + file.size, 0);
     if (totalSize > 25 * 1024 * 1024) {
-      setError("Total file size exceeds 25MB limit");
+      addToast("Total file size exceeds 25MB limit", "error")
       return;
     }
 
-    setError(null);
-    setSuccess(false);
     setPdfBlob(null);
     
     // Clean up old download URL if exists
@@ -290,19 +288,17 @@ export default function ImageToPDF() {
     
     // Save the PDF
     const pdfBytes = await pdfDoc.save();
-    return new Blob([pdfBytes], { type: 'application/pdf' });
+    return new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (images.length === 0) {
-      setError("Please select at least one image");
+      addToast("Please select at least one image", "error")
       return;
     }
 
     setUploading(true);
-    setError(null);
-    setSuccess(false);
 
     // Clean up old download URL if exists
     if (downloadUrl) {
@@ -320,7 +316,7 @@ export default function ImageToPDF() {
       const url = URL.createObjectURL(pdfBlob);
       setPdfBlob(pdfBlob);
       setDownloadUrl(url);
-      setSuccess(true);
+      addToast(`${images.length} image${images.length !== 1 ? 's' : ''} converted to PDF!`, "success")
       
       console.log("PDF created successfully:", pdfBlob.size, "bytes");
       
@@ -328,9 +324,9 @@ export default function ImageToPDF() {
       console.error("Conversion error:", err);
       
       if (err.message.includes("memory") || err.message.includes("heap")) {
-        setError("File too large to process in browser. Try fewer or smaller images.");
+        addToast("File too large to process in browser. Try fewer or smaller images.", "error")
       } else {
-        setError(err.message || "Failed to convert images to PDF. Please try again.");
+        addToast(err.message || "Failed to convert images to PDF. Please try again.", "error")
       }
     } finally {
       setUploading(false);
@@ -370,8 +366,6 @@ export default function ImageToPDF() {
     cleanupImages();
     
     setImages([]);
-    setError(null);
-    setSuccess(false);
     setPdfBlob(null);
     if (downloadUrl) {
       URL.revokeObjectURL(downloadUrl);
@@ -741,36 +735,6 @@ export default function ImageToPDF() {
                 </div>
               </div>
 
-              {/* Error Message */}
-              {error && (
-                <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
-                  <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <div className="font-medium">Error</div>
-                    <div className="text-sm mt-1 whitespace-pre-line">{error}</div>
-                  </div>
-                  <button
-                    onClick={() => setError(null)}
-                    className="text-red-700 hover:text-red-900 ml-2"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-
-              {/* Success Message */}
-              {success && (
-                <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
-                  <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <div className="font-medium">Success!</div>
-                    <div className="text-sm mt-1">
-                      {images.length} image{images.length !== 1 ? 's' : ''} converted to PDF!
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Action Buttons */}
               <div className="space-y-4">
                 <button
@@ -795,7 +759,7 @@ export default function ImageToPDF() {
                   )}
                 </button>
                 
-                {success && pdfBlob && (
+                {pdfBlob && (
                   <button
                     onClick={handleDownload}
                     className="w-full px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"

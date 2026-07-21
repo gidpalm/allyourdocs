@@ -1,0 +1,114 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# ========================
+# DEPENDENCIES
+# ========================
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+package-lock.json  # Use npm ci instead
+yarn.lock
+pnpm-lock.yaml
+
+# ========================
+# BUILD OUTPUTS
+# ========================
+/.next/
+/out/
+/dist/
+/build/
+
+# ========================
+# ENVIRONMENT VARIABLES
+# ========================
+.env*
+!.env.example
+
+# ========================
+# NEXT.JS / VERCEL
+# ========================
+.next/
+.vercel/
+vercel.json  # If you have local test config
+.next-env.d.ts
+
+# ========================
+# DEVELOPMENT
+# ========================
+*.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.pid
+*.seed
+*.pid.lock
+
+# ========================
+# TESTING
+# ========================
+/coverage/
+.nyc_output
+
+# ========================
+# IDE
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ========================
+# OPERATING SYSTEM
+# ========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ========================
+# TYPESCRIPT
+# ========================
+*.tsbuildinfo
+
+# ========================
+# CUSTOM FOR YOUR PROJECT
+# ========================
+# Frontend specific
+frontend/.next/
+frontend/node_modules/
+
+# Backend specific (future)
+backend/node_modules/
+backend/dist/
+backend/.env
+backend/logs/
+
+# ========================
+# TEMPORARY FILES
+# ========================
+tmp/
+temp/
+*.tmp
+*.temp
+
+# ========================
+# SECURITY
+# ========================
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+.vercel

@@ -318,7 +318,7 @@ export default function FeedbackPage() {
                       onChange={handleChange}
                       onBlur={() => handleBlur('name')}
                       className="input"
-                      placeholder="John Doe"
+                      placeholder="Gideon Laryea"
                       maxLength={100}
                     />
                   </div>
@@ -339,7 +339,7 @@ export default function FeedbackPage() {
                           ? 'border-red-400 focus:ring-red-500 focus:border-red-500'
                           : ''
                       }`}
-                      placeholder="john@example.com"
+                      placeholder="palmergideon@example.com"
                       maxLength={255}
                     />
                     {touched.email && formData.email && !validateEmail(formData.email) && (

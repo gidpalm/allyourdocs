@@ -242,12 +242,12 @@ export default function MergePDF() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <FileText className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-3">Merge PDF Files</h1>
@@ -422,7 +422,7 @@ export default function MergePDF() {
               className={`flex-1 px-6 py-4 font-medium rounded-lg transition-all flex items-center justify-center ${
                 isMergeButtonDisabled()
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
+                  : "bg-blue-600 text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
               }`}
             >
               {uploading ? (
@@ -450,7 +450,7 @@ export default function MergePDF() {
 
           {/* Download Section */}
           {downloadUrl && (
-            <div className="mb-8 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6">
+            <div className="mb-8 bg-green-50 border border-green-200 rounded-xl p-6">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mr-4 shadow-sm">
@@ -480,7 +480,7 @@ export default function MergePDF() {
                       link.click();
                       document.body.removeChild(link);
                     }}
-                    className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center"
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center"
                   >
                     <Download className="w-5 h-5 mr-2" />
                     Download PDF

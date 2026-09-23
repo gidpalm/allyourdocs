@@ -126,7 +126,7 @@ export default function Navigation() {
               
               <Link
                 href="/merge-pdf"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium text-center mt-4"
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium text-center mt-4"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Get Started Free

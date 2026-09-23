@@ -236,7 +236,7 @@ export default function PDFToWord() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-green-50 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-md mx-auto">
         <div className="bg-white rounded-xl shadow-lg p-6">
           {/* Header */}

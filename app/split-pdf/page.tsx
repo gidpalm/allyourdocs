@@ -351,12 +351,12 @@ export default function SplitPDF() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-purple-50 py-12">
+    <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-5xl mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Scissors className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-3">Split PDF Free</h1>
@@ -672,7 +672,7 @@ export default function SplitPDF() {
               className={`flex-1 px-6 py-4 font-medium rounded-lg transition-all flex items-center justify-center ${
                 uploading || !file || !pdfLibLoaded || ranges.some(r => !r.isValid)
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
+                  : "bg-purple-600 text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
               }`}
             >
               {uploading ? (
@@ -693,7 +693,7 @@ export default function SplitPDF() {
             {success && zipBlob && (
               <button
                 onClick={handleDownload}
-                className="flex-1 px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
+                className="flex-1 px-6 py-4 bg-green-600 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
               >
                 <Package className="w-5 h-5 mr-2" />
                 Download ZIP

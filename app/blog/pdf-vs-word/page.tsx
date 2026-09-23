@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function PDFvsWordPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
+    <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">PDF vs Word: When to Use Which Format</h1>
@@ -97,7 +97,7 @@ export default function PDFvsWordPage() {
             </div>
           </section>
 
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6">
+          <div className="bg-green-50 border border-green-200 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Need to Convert?</h3>
             <p className="text-gray-700 mb-4">Our tools handle both directions — convert Word to PDF and PDF to Word with formatting preservation.</p>
             <div className="flex flex-wrap gap-3">

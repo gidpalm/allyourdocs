@@ -104,7 +104,7 @@ export default function ToolSEOSection({
           </div>
 
           {/* Tips Section */}
-          <div className="mb-10 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200">
+          <div className="mb-10 bg-gray-50 rounded-xl p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Tips for Best Results</h3>
             <ul className="space-y-3 text-gray-700">
               {tips.map((tip, index) => (
@@ -139,7 +139,7 @@ export default function ToolSEOSection({
           )}
 
           {/* Security Note */}
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6">
+          <div className="bg-green-50 border border-green-200 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-green-900 mb-3 flex items-center">
               <Shield className="w-5 h-5 mr-2 text-green-600" />
               Security & Privacy

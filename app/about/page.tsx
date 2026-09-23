@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -111,7 +111,7 @@ export default function AboutPage() {
       {/* CTA */}
       <section className="py-16 px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 md:p-12">
+          <div className="bg-blue-600 rounded-2xl p-8 md:p-12">
             <h2 className="text-3xl font-bold text-white mb-6">Ready to Simplify Your Document Workflow?</h2>
             <p className="text-blue-100 text-lg mb-8">
               Join thousands of satisfied users who trust AllYourDocs.com for their document needs.

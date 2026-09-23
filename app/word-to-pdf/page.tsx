@@ -409,12 +409,12 @@ export default function WordToPDF() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 py-8">
+      <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-4xl mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
             {/* Header with SEO Keywords */}
             <div className="text-center mb-8">
-              <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6">
                 <FileText className="w-8 h-8 md:w-10 md:h-10 text-white" />
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-3">
@@ -514,7 +514,7 @@ export default function WordToPDF() {
                 className={`flex-1 px-6 py-4 font-medium rounded-lg transition-all flex items-center justify-center ${
                   !file || converting || !html2canvas
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:shadow-lg hover:scale-[1.02] shadow-md'
+                    : 'bg-blue-600 text-white hover:shadow-lg hover:scale-[1.02] shadow-md'
                 }`}
                 aria-label="Convert Word to PDF"
               >
@@ -533,7 +533,7 @@ export default function WordToPDF() {
               {success && pdfBlob && (
                 <button
                   onClick={handleDownload}
-                  className="flex-1 px-6 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
+                  className="flex-1 px-6 py-4 bg-green-600 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
                   aria-label="Download PDF"
                 >
                   <Download className="w-5 h-5 mr-2" />
@@ -552,7 +552,7 @@ export default function WordToPDF() {
 
             {/* Conversion Details */}
             {success && pdfBlob && (
-              <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl border border-blue-200">
+              <div className="mb-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
                 <div className="flex flex-col sm:flex-row items-center justify-between">
                   <div className="flex items-center mb-4 sm:mb-0">
                     <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mr-4 shadow-sm">
@@ -580,7 +580,7 @@ export default function WordToPDF() {
                     </button>
                     <button
                       onClick={handleDownload}
-                      className="flex items-center justify-center bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-800 transition-all shadow-lg hover:shadow-xl"
+                      className="flex items-center justify-center bg-green-600 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-800 transition-all shadow-lg hover:shadow-xl"
                     >
                       <Download className="w-5 h-5 mr-2" />
                       Download PDF

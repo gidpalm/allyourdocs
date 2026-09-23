@@ -414,12 +414,12 @@ export default function ImageToPDF() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-pink-50 py-12">
+    <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="w-20 h-20 bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <ImageIcon className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-3">Image to PDF Converter</h1>
@@ -599,7 +599,7 @@ export default function ImageToPDF() {
                           className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors border border-gray-200"
                         >
                           <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 flex items-center justify-center bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-semibold">
+                            <div className="w-10 h-10 flex items-center justify-center bg-pink-500 text-white rounded-lg font-semibold">
                               {index + 1}
                             </div>
                             <div>
@@ -651,7 +651,7 @@ export default function ImageToPDF() {
             {/* Right Column - Settings & Actions */}
             <div className="lg:col-span-1">
               {/* PDF Settings */}
-              <div className="bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 mb-6 border border-gray-200 shadow-sm">
+              <div className="bg-gray-50 rounded-2xl p-6 mb-6 border border-gray-200 shadow-sm">
                 <h3 className="text-lg font-semibold mb-6 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-pink-600" />
                   PDF Settings
@@ -776,7 +776,7 @@ export default function ImageToPDF() {
                   className={`w-full px-6 py-4 font-medium rounded-lg transition-all flex items-center justify-center ${
                     uploading || images.length === 0
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-gradient-to-r from-pink-600 to-rose-600 text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
+                      : "bg-pink-600 text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
                   }`}
                 >
                   {uploading ? (
@@ -795,7 +795,7 @@ export default function ImageToPDF() {
                 {success && pdfBlob && (
                   <button
                     onClick={handleDownload}
-                    className="w-full px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
+                    className="w-full px-6 py-4 bg-green-600 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
                   >
                     <Download className="w-5 h-5 mr-2" />
                     Download PDF
@@ -813,7 +813,7 @@ export default function ImageToPDF() {
 
               {/* Statistics */}
               {images.length > 0 && (
-                <div className="mt-6 p-5 bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border border-pink-200">
+                <div className="mt-6 p-5 bg-pink-50 rounded-xl border border-pink-200">
                   <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
                     <FileText className="w-4 h-4 mr-2 text-pink-600" />
                     Conversion Summary

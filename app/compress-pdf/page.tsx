@@ -362,12 +362,12 @@ export default function CompressPDF() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-amber-50 py-12">
+    <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="w-20 h-20 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Archive className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-3"> PDF Compression</h1>
@@ -419,7 +419,7 @@ export default function CompressPDF() {
                     </div>
                   ) : (
                     <div>
-                      <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-amber-100 to-orange-100 rounded-full flex items-center justify-center">
+                      <div className="w-20 h-20 mx-auto mb-4 bg-amber-100 rounded-full flex items-center justify-center">
                         <CloudUpload className="w-10 h-10 text-amber-600" />
                       </div>
                       <div className="mb-4">
@@ -429,7 +429,7 @@ export default function CompressPDF() {
                       </div>
                       <button
                         onClick={handleBrowseClick}
-                        className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium rounded-lg hover:shadow-lg transition-all flex items-center justify-center mx-auto"
+                        className="px-6 py-3 bg-amber-500 text-white font-medium rounded-lg hover:shadow-lg transition-all flex items-center justify-center mx-auto"
                       >
                         <FolderOpen className="w-5 h-5 mr-2" />
                         Browse Files
@@ -469,7 +469,7 @@ export default function CompressPDF() {
                         onClick={() => setCompressionType('basic')}
                         className={`p-4 rounded-xl border-2 transition-all ${
                           compressionType === 'basic'
-                            ? "border-blue-500 bg-gradient-to-r from-blue-50 to-cyan-50 shadow-lg"
+                            ? "border-blue-500 bg-blue-50 shadow-lg"
                             : "border-gray-200 hover:border-gray-300 bg-white"
                         }`}
                       >
@@ -486,7 +486,7 @@ export default function CompressPDF() {
                         onClick={() => setCompressionType('enhanced')}
                         className={`p-4 rounded-xl border-2 transition-all ${
                           compressionType === 'enhanced'
-                            ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 shadow-lg"
+                            ? "border-amber-500 bg-amber-50 shadow-lg"
                             : "border-gray-200 hover:border-gray-300 bg-white"
                         }`}
                       >
@@ -503,7 +503,7 @@ export default function CompressPDF() {
                         onClick={() => setCompressionType('extreme')}
                         className={`p-4 rounded-xl border-2 transition-all ${
                           compressionType === 'extreme'
-                            ? "border-red-500 bg-gradient-to-r from-red-50 to-pink-50 shadow-lg"
+                            ? "border-red-500 bg-red-50 shadow-lg"
                             : "border-gray-200 hover:border-gray-300 bg-white"
                         }`}
                       >
@@ -519,7 +519,7 @@ export default function CompressPDF() {
                   </div>
 
                   {/* Compression Quality Settings */}
-                  <div className="mb-8 p-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
+                  <div className="mb-8 p-6 bg-amber-50 rounded-xl border border-amber-200">
                     <h4 className="font-semibold text-amber-800 mb-4 flex items-center">
                       <Image className="w-5 h-5 mr-2" />
                       Compression Settings
@@ -548,7 +548,7 @@ export default function CompressPDF() {
                           step="5"
                           value={imageQuality}
                           onChange={(e) => setImageQuality(parseInt(e.target.value))}
-                          className="w-full h-2 bg-gradient-to-r from-red-200 via-amber-200 to-green-200 rounded-lg appearance-none cursor-pointer"
+                          className="w-full h-2 bg-red-200 rounded-lg appearance-none cursor-pointer"
                         />
                         <div className="flex justify-between text-xs text-amber-700 mt-2">
                           <span className="text-red-600">Smaller file</span>
@@ -617,7 +617,7 @@ export default function CompressPDF() {
             <div className="lg:col-span-1">
               {/* Compression Statistics */}
               {stats && (
-                <div className="mb-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200 shadow-sm">
+                <div className="mb-6 bg-blue-50 rounded-xl p-6 border border-blue-200 shadow-sm">
                   <h3 className="text-lg font-semibold mb-4 flex items-center">
                     <BarChart3 className="w-5 h-5 mr-2 text-blue-600" />
                     Compression Results
@@ -644,7 +644,7 @@ export default function CompressPDF() {
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
-                          className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full" 
+                          className="bg-green-500 h-2 rounded-full" 
                           style={{ width: `${Math.max(5, (stats.compressedSize / stats.originalSize) * 100)}%` }}
                         ></div>
                       </div>
@@ -736,7 +736,7 @@ export default function CompressPDF() {
                   className={`w-full px-6 py-4 font-medium rounded-lg transition-all flex items-center justify-center ${
                     uploading || !file
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-gradient-to-r from-amber-600 to-orange-600 text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
+                      : "bg-amber-600 text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
                   }`}
                 >
                   {uploading ? (
@@ -758,7 +758,7 @@ export default function CompressPDF() {
                 {success && pdfBlob && stats && stats.reductionPercentage > 0 && (
                   <button
                     onClick={handleDownload}
-                    className="w-full px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
+                    className="w-full px-6 py-4 bg-green-600 text-white font-medium rounded-lg hover:shadow-lg hover:scale-[1.02] shadow-md transition-all flex items-center justify-center"
                   >
                     <Download className="w-5 h-5 mr-2" />
                     Download Compressed PDF
@@ -777,7 +777,7 @@ export default function CompressPDF() {
               </div>
 
               {/* Quick Tips */}
-              <div className="mt-6 p-4 bg-gradient-to-r from-amber-50 to-orange-100 rounded-xl border border-amber-200">
+              <div className="mt-6 p-4 bg-amber-50 rounded-xl border border-amber-200">
                 <h4 className="font-medium text-amber-800 mb-2 flex items-center">
                   <Zap className="w-4 h-4 mr-2" />
                   For Maximum Compression
@@ -807,7 +807,7 @@ export default function CompressPDF() {
           <div className="mt-10 pt-8 border-t border-gray-200">
             <h3 className="text-lg font-semibold mb-6">📊 Typical Compression Results:</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+              <div className="p-4 bg-green-50 rounded-xl border border-green-200">
                 <h4 className="font-medium text-green-800 mb-2">Image-Heavy PDFs</h4>
                 <ul className="text-sm text-green-700 space-y-2">
                   <li className="flex items-start">
@@ -825,7 +825,7 @@ export default function CompressPDF() {
                 </ul>
               </div>
               
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
+              <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
                 <h4 className="font-medium text-blue-800 mb-2">Text-Heavy PDFs</h4>
                 <ul className="text-sm text-blue-700 space-y-2">
                   <li className="flex items-start">
@@ -843,7 +843,7 @@ export default function CompressPDF() {
                 </ul>
               </div>
               
-              <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
+              <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
                 <h4 className="font-medium text-amber-800 mb-2">Mixed Content</h4>
                 <ul className="text-sm text-amber-700 space-y-2">
                   <li className="flex items-start">
@@ -862,7 +862,7 @@ export default function CompressPDF() {
               </div>
             </div>
             
-            <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+            <div className="mt-6 p-4 bg-purple-50 rounded-xl border border-purple-200">
               <h4 className="font-medium text-purple-800 mb-3">💡 Pro Tips for Best Results:</h4>
               <div className="text-sm text-purple-700 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

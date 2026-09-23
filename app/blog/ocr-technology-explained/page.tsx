@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function OCRTechnologyPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
+    <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Understanding OCR Technology: How It Extracts Text from Images</h1>
@@ -82,7 +82,7 @@ export default function OCRTechnologyPage() {
             </ul>
           </section>
 
-          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-6">
+          <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Extract Text from Images Now</h3>
             <p className="text-gray-700 mb-4">Our Image to Text tool uses Tesseract.js OCR engine, running entirely in your browser for maximum privacy.</p>
             <a href="/image-to-text" className="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors">Try OCR Extraction</a>

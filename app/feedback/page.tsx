@@ -288,7 +288,7 @@ export default function FeedbackPage() {
   // Render success screen
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 pb-16 px-4">
+      <div className="min-h-screen bg-gray-50 pt-24 pb-16 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
@@ -319,7 +319,7 @@ export default function FeedbackPage() {
               <div className="space-y-3 pt-4">
                 <button
                   onClick={handleCloseSuccess}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center justify-center"
+                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center justify-center"
                 >
                   <Send className="w-5 h-5 mr-2" />
                   Submit More Feedback
@@ -362,15 +362,15 @@ export default function FeedbackPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 pb-16 px-4">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-16 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-6">
             <MessageSquare className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Share Your <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Feedback</span>
+            Share Your <span className="bg-blue-600 bg-clip-text text-transparent">Feedback</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Help us improve AllYourDocs. Your feedback directly shapes our tools.
@@ -568,7 +568,7 @@ export default function FeedbackPage() {
                     className={`flex-1 py-4 rounded-lg font-medium flex items-center justify-center transition-all ${
                       isSubmitting
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90 hover:shadow-lg'
+                        : 'bg-blue-600 text-white hover:opacity-90 hover:shadow-lg'
                     }`}
                   >
                     {isSubmitting ? (
@@ -643,7 +643,7 @@ export default function FeedbackPage() {
             </div>
 
             {/* Stats */}
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl shadow-xl p-6 border border-blue-100">
+            <div className="bg-blue-50 rounded-2xl shadow-xl p-6 border border-blue-100">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Our Feedback Impact</h3>
               <div className="space-y-4">
                 <div>

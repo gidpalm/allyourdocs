@@ -547,25 +547,25 @@ export default function ImageToText() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-10">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Brain className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-3">Image to Text Converter (OCR)</h1>
             <p className="text-gray-600">
               Extract clean text from images - Tables converted to sentences
             </p>
-            <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-800">
+            <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
               <div className="w-2 h-2 rounded-full bg-green-600 mr-2 animate-pulse"></div>
               {isEngineReady ? "OCR Engine Ready" : "Loading OCR Engine..."}
             </div>
           </div>
 
           {!isEngineReady && (
-            <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
+            <div className="mb-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
               <div className="flex items-center">
                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin mr-4" />
                 <div className="flex-1">
@@ -575,7 +575,7 @@ export default function ImageToText() {
                   </p>
                   <div className="w-full bg-blue-200 rounded-full h-2">
                     <div 
-                      className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-300" 
+                      className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
                       style={{ width: `${engineLoadProgress}%` }}
                     ></div>
                   </div>
@@ -734,7 +734,7 @@ export default function ImageToText() {
                           className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors border border-gray-200"
                         >
                           <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 flex items-center justify-center bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-semibold">
+                            <div className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white rounded-lg font-semibold">
                               {index + 1}
                             </div>
                             <div className="flex items-center space-x-3">
@@ -778,7 +778,7 @@ export default function ImageToText() {
               )}
 
               {(uploading || currentProcessingImage) && (
-                <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
+                <div className="mb-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
                   <h4 className="font-semibold text-blue-800 mb-4 flex items-center">
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     {currentProcessingImage ? `Processing: ${currentProcessingImage}` : "Processing Images..."}
@@ -792,7 +792,7 @@ export default function ImageToText() {
                       </div>
                       <div className="w-full bg-blue-200 rounded-full h-2">
                         <div 
-                          className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-300" 
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
                           style={{ width: `${overallProgress}%` }}
                         ></div>
                       </div>
@@ -806,7 +806,7 @@ export default function ImageToText() {
                         </div>
                         <div className="w-full bg-blue-200 rounded-full h-2">
                           <div 
-                            className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-300" 
+                            className="bg-green-500 h-2 rounded-full transition-all duration-300" 
                             style={{ width: `${currentImageProgress}%` }}
                           ></div>
                         </div>
@@ -836,7 +836,7 @@ export default function ImageToText() {
             </div>
 
             <div className="lg:col-span-1">
-              <div className="bg-gradient-to-b from-gray-50 to-white rounded-2xl p-6 mb-6 border border-gray-200 shadow-sm">
+              <div className="bg-gray-50 rounded-2xl p-6 mb-6 border border-gray-200 shadow-sm">
                 <h3 className="text-lg font-semibold mb-6 flex items-center">
                   <Settings className="w-5 h-5 mr-2 text-blue-600" />
                   OCR Settings
@@ -844,7 +844,7 @@ export default function ImageToText() {
                 
                 <div className="space-y-6">
                   <div className="mb-4">
-                    <label className="flex items-center space-x-3 cursor-pointer p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200">
+                    <label className="flex items-center space-x-3 cursor-pointer p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200">
                       <input
                         type="checkbox"
                         checked={settings.useMultiLang}
@@ -942,7 +942,7 @@ export default function ImageToText() {
                     </label>
                   </div>
                   
-                  <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
+                  <div className="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
                     <div className="text-sm text-amber-800">
                       <div className="font-medium mb-2 flex items-center">
                         <Table className="w-4 h-4 mr-2" />
@@ -1002,7 +1002,7 @@ export default function ImageToText() {
                   className={`w-full px-6 py-4 font-medium rounded-lg transition-all flex items-center justify-center ${
                     uploading || images.length === 0 || !isEngineReady
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
+                      : "bg-blue-600 text-white hover:shadow-lg hover:scale-[1.02] shadow-md"
                   }`}
                 >
                   {uploading ? (
@@ -1028,7 +1028,7 @@ export default function ImageToText() {
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={copyToClipboard}
-                        className="px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all shadow-sm hover:shadow-md flex items-center justify-center"
+                        className="px-4 py-3 bg-green-500 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all shadow-sm hover:shadow-md flex items-center justify-center"
                       >
                         {copied ? (
                           <>
@@ -1045,7 +1045,7 @@ export default function ImageToText() {
                       
                       <button
                         onClick={downloadAsText}
-                        className="px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-medium rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all shadow-sm hover:shadow-md flex items-center justify-center"
+                        className="px-4 py-3 bg-blue-500 text-white font-medium rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all shadow-sm hover:shadow-md flex items-center justify-center"
                       >
                         <Download className="w-4 h-4 mr-2" />
                         .TXT File
@@ -1054,7 +1054,7 @@ export default function ImageToText() {
                     
                     <button
                       onClick={downloadAsJSON}
-                      className="w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all shadow-sm hover:shadow-md flex items-center justify-center"
+                      className="w-full px-4 py-3 bg-purple-500 text-white font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all shadow-sm hover:shadow-md flex items-center justify-center"
                     >
                       <FileCode className="w-4 h-4 mr-2" />
                       Download as JSON
@@ -1062,7 +1062,7 @@ export default function ImageToText() {
                     
                     <button
                       onClick={() => setFullscreenText(!fullscreenText)}
-                      className="w-full px-4 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white font-medium rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all shadow-sm hover:shadow-md flex items-center justify-center"
+                      className="w-full px-4 py-3 bg-gray-600 text-white font-medium rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all shadow-sm hover:shadow-md flex items-center justify-center"
                     >
                       {fullscreenText ? (
                         <>
@@ -1089,7 +1089,7 @@ export default function ImageToText() {
               </div>
 
               {images.length > 0 && (
-                <div className="mt-6 p-5 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
+                <div className="mt-6 p-5 bg-blue-50 rounded-xl border border-blue-200">
                   <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
                     <FileText className="w-4 h-4 mr-2 text-blue-600" />
                     OCR Summary
@@ -1155,7 +1155,7 @@ export default function ImageToText() {
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                   <FileText className="w-5 h-5 mr-2 text-blue-600" />
                   Extracted Text
-                  <span className="ml-2 px-2 py-1 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 text-xs font-medium rounded-full flex items-center">
+                  <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full flex items-center">
                     <Layout className="w-3 h-3 mr-1" />
                     Table-free text
                   </span>
@@ -1197,7 +1197,7 @@ export default function ImageToText() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {results.map((result, index) => (
                       <div key={index} className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
-                        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-3 border-b">
+                        <div className="bg-gray-50 px-4 py-3 border-b">
                           <div className="flex items-center justify-between">
                             <div className="font-medium text-gray-900 flex items-center">
                               <div className="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg font-semibold mr-3">

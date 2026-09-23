@@ -1,5 +1,5 @@
 ﻿import { Metadata } from "next"
-import { FileText, File, Image, Scissors, Type, RefreshCw, Upload, Settings, Download, Minus, Shield, Lock, Globe, Users, Clock, Zap, CheckCircle, Award, BarChart, HelpCircle } from "lucide-react"
+import { FileText, File, Image, Scissors, Type, RefreshCw, Upload, Settings, Download, Minus, Shield, Lock, Globe, Users, Clock, Zap, CheckCircle, Award, BarChart, HelpCircle, ArrowRight } from "lucide-react" // will be fixed below
 import Link from "next/link"
 import BlogPreview from "@/components/BlogPreview"
 
@@ -86,12 +86,12 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section with Substantial Content */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]" />
+      <div className="relative overflow-hidden bg-gray-50">
+        <div className="absolute inset-0 bg-grid-slate-100" />
         <div className="relative max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              Your Complete <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-yellow-600">Document Processing</span> Solution
+              Your Complete <span className="text-red-600">Document Processing</span> Solution
             </h1>
             
             <div className="max-w-4xl mx-auto mb-10">
@@ -209,9 +209,7 @@ export default function Home() {
                   <p className="text-gray-600 mb-4">{feature.description}</p>
                   <div className={`flex items-center ${feature.iconColor} font-medium`}>
                     Try Now
-                    <svg className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
+                    <ArrowRight className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </div>
@@ -220,12 +218,12 @@ export default function Home() {
         </div>
 
         {/* Key Advantages Section */}
-        <div className="bg-gradient-to-br from-gray-50 to-white rounded-3xl p-8 mb-16">
+        <div className="bg-gray-50 rounded-3xl p-8 mb-16">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Why Choose AllYourDocs Pro?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {advantages.map((advantage, index) => (
               <div key={index} className="text-center">
-                <div className="bg-gradient-to-br from-blue-50 to-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+                <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
                   <advantage.icon className="w-8 h-8 text-blue-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-3">{advantage.title}</h3>
@@ -237,7 +235,7 @@ export default function Home() {
       </div>
 
       {/* How It Works Section */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
+      <div className="bg-gray-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-4">How Our Document Processing Works</h2>
           <p className="text-xl text-center text-gray-300 mb-12 max-w-3xl mx-auto">
@@ -321,7 +319,7 @@ export default function Home() {
       </div>
 
       {/* Engagement Section */}
-      <section className="bg-gradient-to-r from-gray-50 to-blue-50 py-16 border-t border-gray-200">
+      <section className="bg-gray-50 py-16 border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Trusted by Thousands Worldwide</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">

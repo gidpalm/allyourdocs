@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function ReducePDFFileSizePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
+    <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">How to Reduce PDF File Size Without Losing Quality</h1>
@@ -85,7 +85,7 @@ export default function ReducePDFFileSizePage() {
             </ul>
           </section>
 
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Try It Now</h3>
             <p className="text-gray-700 mb-4">Our PDF compression tool gives you full control over compression levels with instant results. No registration required, completely private.</p>
             <a href="/compress-pdf" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">Compress Your PDF Now</a>

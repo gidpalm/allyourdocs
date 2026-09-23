@@ -4,6 +4,7 @@
 # DEPENDENCIES
 # ========================
 node_modules/
+frontend/
 .pnp
 .pnp.*
 .yarn/*

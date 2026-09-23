@@ -409,13 +409,6 @@ export default function WordToPDF() {
 
   return (
     <>
-      {/* SEO Meta Tags (For Search Engines) */}
-      <div className="sr-only" aria-hidden="true">
-        <h1>Free Word to PDF Converter - Convert DOC/DOCX to PDF Online</h1>
-        <p>Convert Microsoft Word documents to PDF format instantly. No registration, no watermarks, 100% free.</p>
-        <p>Keywords: Word to PDF, DOC to PDF, DOCX to PDF, convert Word to PDF, free Word converter, online PDF converter, Microsoft Word to PDF, document conversion, Office to PDF, Word file converter</p>
-      </div>
-      
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 py-8">
         <div className="max-w-4xl mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">

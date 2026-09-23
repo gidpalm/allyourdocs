@@ -26,9 +26,11 @@ export default function SEO({
       <meta property="og:url" content={fullCanonical} />
       <meta property="og:image" content={`${siteUrl}${ogImage}`} />
       <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="AllYourDocs.com" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={fullDescription} />
+      <meta name="twitter:site" content="@allyourdocs" />
       <meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
     </>
   )

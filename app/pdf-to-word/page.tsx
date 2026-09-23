@@ -3,6 +3,7 @@
 import { useState, useRef, ChangeEvent, FormEvent, DragEvent } from "react"
 import Link from "next/link"
 import { Upload, FileText, Download, AlertCircle, CheckCircle, Loader2, RefreshCw } from "lucide-react"
+import ToolSEOSection from "@/components/ToolSEOSection"
 
 export default function PDFToWord() {
   const [file, setFile] = useState<File | null>(null)
@@ -350,6 +351,33 @@ export default function PDFToWord() {
               ← Back to All Tools
             </Link>
           </div>
+
+          <ToolSEOSection
+            toolName="PDF to Word"
+            toolDescription="Convert PDF files to editable Word documents (DOC/DOCX) online for free."
+            howToSteps={[
+              "Click 'Select a Word file' to upload your document",
+              "Wait for the upload to complete",
+              "Click 'Convert to PDF' to start conversion",
+              "Download your PDF when ready"
+            ]}
+            faq={[
+              { question: "Is this free?", answer: "Yes! Completely free with no hidden costs or registration." },
+              { question: "What formats?", answer: "We support .doc and .docx files." },
+              { question: "Are documents secure?", answer: "100% secure. All processing happens in your browser." },
+              { question: "Does it preserve formatting?", answer: "Yes! The converter maintains images, tables, fonts, and layout." }
+            ]}
+            tips={[
+              "Use for documents up to 10MB",
+              "Complex formatting may need manual adjustment",
+              "No watermarks or headers added"
+            ]}
+            relatedTools={[
+              { name: "PDF to Text", path: "/pdf-to-text", description: "Extract text from PDFs" },
+              { name: "Image to Text", path: "/image-to-text", description: "OCR text extraction" },
+              { name: "Compress PDF", path: "/compress-pdf", description: "Reduce PDF file size" }
+            ]}
+          />
         </div>
 
         {/* Info */}

@@ -3,6 +3,7 @@
 import { useState, useRef, ChangeEvent, FormEvent, DragEvent } from "react"
 import Link from "next/link"
 import { Upload, FileText, Download, AlertCircle, CheckCircle, Loader2, RefreshCw, Copy, Check } from "lucide-react"
+import ToolSEOSection from "@/components/ToolSEOSection"
 
 export default function PDFToText() {
   const [file, setFile] = useState<File | null>(null)

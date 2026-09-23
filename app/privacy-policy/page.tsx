@@ -1,6 +1,6 @@
 ﻿export const metadata = {
-  title: "Privacy Policy - AllYourDocs",
-  description: "Privacy policy for AllYourDocs - Your privacy is important to us.",
+  title: "Privacy Policy - AllYourDocs.com",
+  description: "Privacy policy for AllYourDocs.com - Your privacy is important to us.",
 }
 
 export default function PrivacyPolicyPage() {
@@ -49,12 +49,14 @@ export default function PrivacyPolicyPage() {
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Analytics</h2>
               <p className="text-gray-700">
-                We use basic, anonymous analytics to understand how many people visit our site and which tools are most popular. This information is:
+                We use Google Analytics for basic, anonymous web analytics to understand how many people visit our site 
+                and which tools are most popular. This information is:
               </p>
               <ul className="list-disc pl-6 mt-4 space-y-2 text-gray-700">
                 <li>Completely anonymous (no personal identifiers)</li>
                 <li>Used only to improve our services</li>
                 <li>Not shared with any third parties</li>
+                <li>You can opt out via your browser&apos;s cookie settings</li>
               </ul>
             </section>
 

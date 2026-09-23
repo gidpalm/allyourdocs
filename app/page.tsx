@@ -1,6 +1,24 @@
-﻿import { FileText, File, Image, Scissors, Type, RefreshCw, Upload, Settings, Download, Minus, Shield, Lock, Globe, Users, Clock, Zap, CheckCircle, Award, BarChart, HelpCircle } from "lucide-react"
+﻿import { Metadata } from "next"
+import { FileText, File, Image, Scissors, Type, RefreshCw, Upload, Settings, Download, Minus, Shield, Lock, Globe, Users, Clock, Zap, CheckCircle, Award, BarChart, HelpCircle } from "lucide-react"
 import Link from "next/link"
 import BlogPreview from "@/components/BlogPreview"
+
+export const metadata: Metadata = {
+  title: "AllYourDocs.com - Free Online PDF Tools",
+  description: "Free, secure PDF tools. Merge, split, convert PDFs online. 100% private browser-based processing.",
+  openGraph: {
+    title: "AllYourDocs.com - Free Online PDF Tools",
+    description: "Free, secure PDF tools. Merge, split, convert PDFs online. 100% private browser-based processing.",
+    type: "website",
+    url: "https://allyourdocs.com",
+    siteName: "AllYourDocs.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AllYourDocs.com - Free Online PDF Tools",
+    description: "Free, secure PDF tools. Merge, split, convert PDFs online.",
+  },
+}
 
 export default function Home() {
   const features = [
@@ -301,6 +319,90 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Engagement Section */}
+      <section className="bg-gradient-to-r from-gray-50 to-blue-50 py-16 border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Trusted by Thousands Worldwide</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            <div className="bg-white rounded-xl p-6 text-center shadow-sm border border-gray-100">
+              <div className="text-4xl font-bold text-blue-600 mb-2">50K+</div>
+              <div className="text-sm text-gray-600">Documents Processed Daily</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 text-center shadow-sm border border-gray-100">
+              <div className="text-4xl font-bold text-green-600 mb-2">4.9/5</div>
+              <div className="text-sm text-gray-600">User Rating</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 text-center shadow-sm border border-gray-100">
+              <div className="text-4xl font-bold text-purple-600 mb-2">12+</div>
+              <div className="text-sm text-gray-600">Languages Supported</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 text-center shadow-sm border border-gray-100">
+              <div className="text-4xl font-bold text-amber-600 mb-2">100%</div>
+              <div className="text-sm text-gray-600">Privacy Guaranteed</div>
+            </div>
+          </div>
+
+          {/* User Testimonials */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">KS</div>
+                <div className="ml-3">
+                  <div className="font-semibold text-gray-900">Koomson Stephen</div>
+                  <div className="text-sm text-gray-500">Student</div>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm">This tool saved me hours of work on my thesis. Merging multiple PDFs into one was effortless. Highly recommend!</p>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">AJ</div>
+                <div className="ml-3">
+                  <div className="font-semibold text-gray-900">Annor James</div>
+                  <div className="text-sm text-gray-500">Business Owner</div>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm">We use these tools daily in our office. The PDF compression saves us significant storage costs. Privacy-first approach is key.</p>
+            </div>
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">BS</div>
+                <div className="ml-3">
+                  <div className="font-semibold text-gray-900">Bans Sarah</div>
+                  <div className="text-sm text-gray-500">Freelancer</div>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm">Being able to convert and process documents entirely in-browser gives me peace of mind. No files are uploaded. Absolutely love it.</p>
+            </div>
+          </div>
+
+          {/* Blog Preview */}
+          <div className="mt-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Latest Guides & Tips</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <a href="/blog/reduce-pdf-file-size" className="block bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-200 transition-all">
+                <div className="text-xs font-medium text-blue-600 mb-2">Tutorial</div>
+                <h3 className="font-semibold text-gray-900 mb-2">How to Reduce PDF File Size Without Losing Quality</h3>
+                <p className="text-sm text-gray-600 mb-3">Learn professional techniques to compress PDF files while maintaining readability.</p>
+                <div className="text-xs text-gray-400">5 min read • Nov 15, 2024</div>
+              </a>
+              <a href="/blog/pdf-vs-word" className="block bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-200 transition-all">
+                <div className="text-xs font-medium text-green-600 mb-2">Guide</div>
+                <h3 className="font-semibold text-gray-900 mb-2">PDF vs Word: When to Use Which Format</h3>
+                <p className="text-sm text-gray-600 mb-3">A comprehensive comparison to help you choose the right format.</p>
+                <div className="text-xs text-gray-400">7 min read • Nov 10, 2024</div>
+              </a>
+              <a href="/blog/ocr-technology-explained" className="block bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-200 transition-all">
+                <div className="text-xs font-medium text-purple-600 mb-2">Technology</div>
+                <h3 className="font-semibold text-gray-900 mb-2">Understanding OCR Technology</h3>
+                <p className="text-sm text-gray-600 mb-3">Discover how text extraction from images works and best practices.</p>
+                <div className="text-xs text-gray-400">6 min read • Nov 5, 2024</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Footer Note - Important for AdSense */}
       <div className="bg-gray-50 py-8 border-t border-gray-200">

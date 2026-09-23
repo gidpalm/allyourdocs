@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { Metadata } from "next";
+import ToolSEOSection from "@/components/ToolSEOSection";
 import {
   Upload,
   File,
@@ -1440,6 +1442,37 @@ export default function RearrangePDF() {
                 Powered by pdf-lib • Works entirely in your browser • No data leaves your computer
               </p>
             </div>
+
+            <ToolSEOSection
+              toolName="Rearrange PDF"
+              toolDescription="Rearrange, reorder, and manage PDF pages with advanced features like drag-and-drop, search, filter, and delete. All processing happens in your browser."
+              howToSteps={[
+                "Click 'Drop PDF Here' or click to browse for your PDF file",
+                "Wait for page analysis and previews to load",
+                "Drag and drop pages to reorder them",
+                "Use quick actions: Sort, Reverse, Shuffle, or Delete pages",
+                "Click 'Apply Changes' and download your rearranged PDF"
+              ]}
+              faq={[
+                { question: "Can I delete pages?", answer: "Yes! Select pages and click 'Delete Selected'. Use the undo feature to restore deleted pages." },
+                { question: "How does drag-and-drop work?", answer: "Simply drag pages in the grid view to reorder them. The new order is reflected immediately." },
+                { question: "Can I search for specific pages?", answer: "Yes! Use the search bar to find pages by content type or keyword." },
+                { question: "Are my files secure?", answer: "100% secure. All processing happens in your browser. No data leaves your computer." },
+                { question: "What file sizes are supported?", answer: "We support PDFs up to 50MB for best performance." }
+              ]}
+              tips={[
+                "Use Sort for quick alphabetical/numerical ordering",
+                "Use Search to quickly locate specific content",
+                "Filter by page type to focus on specific content",
+                "Undo is available for all deletion actions"
+              ]}
+              relatedTools={[
+                { name: "Merge PDF", path: "/merge-pdf", description: "Combine PDFs into one document" },
+                { name: "Split PDF", path: "/split-pdf", description: "Split PDFs by page ranges" },
+                { name: "Compress PDF", path: "/compress-pdf", description: "Reduce PDF file size" }
+              ]}
+              iconColor="text-indigo-600"
+            />
           </div>
         </div>
       </div>

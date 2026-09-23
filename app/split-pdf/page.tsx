@@ -3,6 +3,7 @@
 import { useState, useRef, ChangeEvent, FormEvent, DragEvent, useEffect } from "react"
 import Link from "next/link"
 import { Upload, Scissors, Download, AlertCircle, CheckCircle, Loader2, FileText, Trash2, Plus, Minus, Package, RefreshCw, X } from "lucide-react"
+import ToolSEOSection from "@/components/ToolSEOSection"
 
 interface SplitRange {
   id: number;
@@ -774,8 +775,38 @@ export default function SplitPDF() {
               ← Back to All Tools
             </Link>
           </div>
+
+          <ToolSEOSection
+            toolName="Split PDF"
+            toolDescription="Split PDF documents into multiple PDF files by page ranges. Our Split PDF tool lets you specify exactly which pages go into each output file, with results downloaded as a ZIP archive."
+            howToSteps={[
+              "Click 'Select a PDF file' or drag and drop your PDF onto the upload area",
+              "Wait for the page count to be detected",
+              "Configure split ranges by setting start and end pages for each section",
+              "Use 'Divide equally' or 'Split into single pages' for automatic range setup",
+              "Click 'Split PDF' and download the ZIP archive with all split files"
+            ]}
+            faq={[
+              { question: "How do I split by equal page counts?", answer: "Use the 'Divide equally' button to automatically distribute pages evenly across all ranges." },
+              { question: "Can I split into single pages?", answer: "Yes! Click 'Split into single pages' to create a separate PDF for each page." },
+              { question: "What format are the results in?", answer: "Each split PDF is packaged in a ZIP file for easy download and organization." },
+              { question: "Are my files secure?", answer: "100% secure. All splitting happens directly in your browser. PDF files are never uploaded to any servers." },
+              { question: "What file sizes are supported?", answer: "We support PDFs up to 25MB for best performance." }
+            ]}
+            tips={[
+              "Use 'Divide equally' for quick, even splits",
+              "Check page range validity before splitting — invalid ranges are highlighted in red",
+              "Large PDFs may take longer to process in browser",
+              "Download the ZIP file promptly — split PDFs are temporary"
+            ]}
+            relatedTools={[
+              { name: "Merge PDF", path: "/merge-pdf", description: "Combine multiple PDFs into one document" },
+              { name: "Compress PDF", path: "/compress-pdf", description: "Reduce PDF file size" },
+              { name: "Rearrange PDF", path: "/rearrange-pdf", description: "Reorder PDF pages and manage content" }
+            ]}
+          />
         </div>
       </div>
     </div>
-  );
+  )
 }

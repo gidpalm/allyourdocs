@@ -4,6 +4,7 @@
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { Upload, X, FileText, Download, AlertCircle, CheckCircle, Loader2, RefreshCw, ArrowUp, ArrowDown } from "lucide-react"
+import ToolSEOSection from "@/components/ToolSEOSection"
 
 // Import PDF libraries
 let PDFLib: any = null;
@@ -528,6 +529,36 @@ export default function MergePDF() {
               ← Back to All Tools
             </Link>
           </div>
+
+          <ToolSEOSection
+            toolName="Merge PDF"
+            toolDescription="Our Merge PDF tool combines multiple PDF files into a single, unified document. Simply upload your PDFs, arrange them in your preferred order, and click merge. The result is a professionally formatted PDF with all your content in one place."
+            howToSteps={[
+              "Click 'Select Files' or drag and drop your PDF files onto the upload area",
+              "Add up to 20 PDF files, each up to 10MB in size",
+              "Use the arrow buttons to rearrange files into your desired order",
+              "Click 'Merge PDFs' to combine all files into one document",
+              "Download your merged PDF and you're done!"
+            ]}
+            faq={[
+              { question: "Is Merge PDF really free?", answer: "Yes! Our PDF merger is completely free with no hidden costs, watermarks, or registration required. You can merge unlimited PDF files." },
+              { question: "How many PDFs can I merge at once?", answer: "You can merge up to 20 PDF files at once, with each file limited to 10MB. This is more than enough for most documents, reports, and presentations." },
+              { question: "Are my files secure?", answer: "100% secure. All merging happens directly in your browser. Your PDF files never leave your computer or get uploaded to any servers." },
+              { question: "Will the merged PDF look professional?", answer: "Yes! Our merger preserves all formatting, fonts, images, and layout from your original PDFs. The resulting document maintains the exact appearance of your source files." },
+              { question: "Can I merge password-protected PDFs?", answer: "Password-protected PDFs may not be processed. Please remove password protection before merging for best results." }
+            ]}
+            tips={[
+              "Arrange files in order before merging — use the up/down arrows",
+              "Smaller files merge faster — consider compressing large PDFs first",
+              "Check file order by reviewing the position numbers before merging",
+              "If merge fails, try with fewer or smaller files"
+            ]}
+            relatedTools={[
+              { name: "Split PDF", path: "/split-pdf", description: "Divide a PDF into multiple files by page ranges" },
+              { name: "Compress PDF", path: "/compress-pdf", description: "Reduce PDF file size before merging" },
+              { name: "Rearrange PDF", path: "/rearrange-pdf", description: "Reorder PDF pages and manage content" }
+            ]}
+          />
         </div>
       </div>
     </div>

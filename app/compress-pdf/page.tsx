@@ -3,6 +3,7 @@
 import { useState, useRef, ChangeEvent, FormEvent, DragEvent } from "react"
 import Link from "next/link"
 import { Upload, Download, AlertCircle, CheckCircle, Loader2, FileText, BarChart3, Settings, Zap, Sparkles, Target, Archive, RefreshCw, X, Image, FolderOpen, CloudUpload } from "lucide-react"
+import ToolSEOSection from "@/components/ToolSEOSection"
 
 interface CompressionStats {
   originalSize: number;
@@ -885,8 +886,38 @@ export default function CompressPDF() {
               ← Back to All Tools
             </Link>
           </div>
+
+          <ToolSEOSection
+            toolName="Compress PDF"
+            toolDescription="Reduce PDF file sizes with three compression levels. Our Compress PDF tool uses metadata removal, image optimization, and browser-native compression to shrink your documents while maintaining quality."
+            howToSteps={[
+              "Click 'Select PDF file' or drag and drop your PDF onto the upload area",
+              "Choose a compression level: Basic (10-30%), Enhanced (25-50%), or Extreme (40-70%)",
+              "Adjust image quality and metadata removal settings as needed",
+              "Click 'Compress PDF' to start compression",
+              "Download your compressed PDF when ready"
+            ]}
+            faq={[
+              { question: "How much can I reduce my PDF file size?", answer: "Compression results vary by content. Image-heavy PDFs typically see 40-70% reduction. Text-only PDFs typically see 10-30% reduction." },
+              { question: "What's the difference between compression levels?", answer: "Basic removes metadata only (fast). Enhanced adds structure optimization. Extreme maximum compression with image quality reduction." },
+              { question: "Will compression affect quality?", answer: "Basic and Enhanced modes preserve quality. Extreme mode may reduce image quality for maximum size reduction." },
+              { question: "Are my files secure?", answer: "Yes! All compression happens entirely in your browser. Your PDF files are never uploaded to any server." },
+              { question: "What file sizes are supported?", answer: "We support PDFs up to 50MB. For best performance, use PDFs under 25MB." }
+            ]}
+            tips={[
+              "Use Extreme mode with 20-30% quality for scanned documents",
+              "Use Enhanced mode with 50%+ quality for quality-sensitive documents",
+              "Enable 'Remove Metadata' for an extra 10-25% size reduction",
+              "If no compression is achieved, the PDF may already be optimized"
+            ]}
+            relatedTools={[
+              { name: "Merge PDF", path: "/merge-pdf", description: "Combine multiple PDFs into one document" },
+              { name: "Image to PDF", path: "/image-to-pdf", description: "Convert images to PDF format" },
+              { name: "PDF to Word", path: "/pdf-to-word", description: "Convert PDFs to editable Word documents" }
+            ]}
+          />
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://allyourdocs.pro'
+  const baseUrl = 'https://allyourdocs.com'
   
   const routes = [
     '',
@@ -15,10 +15,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     'word-to-pdf',
     'compress-pdf',
     'image-to-pdf',
-    'pdf-to-images',
     'pdf-to-text',
     'image-to-text',
     'rearrange-pdf',
+    'blog/reduce-pdf-file-size',
+    'blog/pdf-vs-word',
+    'blog/ocr-technology-explained',
   ].map((route) => ({
     url: `${baseUrl}/${route}`,
     lastModified: new Date(),

@@ -2,8 +2,8 @@
 import { CheckCircle, Users, Shield, Zap, Globe } from "lucide-react"
 
 export const metadata = {
-  title: "About Us - AllYourDocs.pro",
-  description: "Learn about AllYourDocs.pro - Free online PDF tools for everyone.",
+  title: "About Us - AllYourDocs.com",
+  description: "Learn about AllYourDocs.com - Free online PDF tools for everyone.",
 }
 
 export default function AboutPage() {
@@ -12,9 +12,9 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            About <span className="text-blue-600">AllYourDocs.pro</span>
-          </h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              About <span className="text-blue-600">AllYourDocs.com</span>
+            </h1>
           <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto">
             We're on a mission to make document conversion and management simple, free, and accessible to everyone.
           </p>
@@ -32,15 +32,15 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold text-gray-900">Our Story</h2>
             </div>
             <div className="space-y-6 text-gray-700 text-lg">
-              <p>
-                AllYourDocs.pro was born out of frustration with expensive, complicated document tools. We noticed that people were paying monthly subscriptions just to perform simple tasks like converting PDFs or merging documents.
-              </p>
-              <p>
-                In 2023, we set out to create a better solution - a collection of powerful, easy-to-use document tools that would be completely free, with no hidden costs or registration requirements.
-              </p>
-              <p>
-                Today, we serve thousands of users every month, helping students, professionals, and businesses manage their documents efficiently without breaking the bank.
-              </p>
+          <p>
+            AllYourDocs.com was born out of frustration with expensive, complicated document tools. We noticed that people were paying monthly subscriptions just to perform simple tasks like converting PDFs or merging documents.
+          </p>
+          <p>
+            In 2023, we set out to create a better solution - a collection of powerful, easy-to-use document tools that would be completely free, with no hidden costs or registration requirements.
+          </p>
+          <p>
+            Today, we serve thousands of users every month, helping students, professionals, and businesses manage their documents efficiently without breaking the bank.
+          </p>
             </div>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function AboutPage() {
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 md:p-12">
             <h2 className="text-3xl font-bold text-white mb-6">Ready to Simplify Your Document Workflow?</h2>
             <p className="text-blue-100 text-lg mb-8">
-              Join thousands of satisfied users who trust AllYourDocs.pro for their document needs.
+              Join thousands of satisfied users who trust AllYourDocs.com for their document needs.
             </p>
             <Link
               href="/"

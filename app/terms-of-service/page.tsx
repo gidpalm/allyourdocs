@@ -1,6 +1,6 @@
 ﻿export const metadata = {
-  title: "Terms of Service - AllYourDocs.pro",
-  description: "Terms and conditions for using AllYourDocs.pro services.",
+  title: "Terms of Service - AllYourDocs.com",
+  description: "Terms and conditions for using AllYourDocs.com services.",
 }
 
 export default function TermsOfServicePage() {
@@ -15,14 +15,14 @@ export default function TermsOfServicePage() {
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Acceptance of Terms</h2>
               <p className="text-gray-700">
-                By accessing and using AllYourDocs.pro ("the Service"), you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our Service.
+                By accessing and using AllYourDocs.com ("the Service"), you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our Service.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Description of Service</h2>
               <p className="text-gray-700">
-                AllYourDocs.pro provides free online document conversion and manipulation tools. All processing occurs in your web browser, and no files are uploaded to our servers.
+                AllYourDocs.com provides free online document conversion and manipulation tools. All processing occurs in your web browser, and no files are uploaded to our servers.
               </p>
             </section>
 
@@ -61,14 +61,14 @@ export default function TermsOfServicePage() {
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Limitation of Liability</h2>
               <p className="text-gray-700">
-                To the fullest extent permitted by law, AllYourDocs.pro shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the Service.
+                To the fullest extent permitted by law, AllYourDocs.com shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the Service.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">7. Intellectual Property</h2>
               <p className="text-gray-700">
-                All content, features, and functionality on AllYourDocs.pro, including but not limited to text, graphics, logos, and software, are the property of AllYourDocs.pro and are protected by copyright and other intellectual property laws.
+                All content, features, and functionality on AllYourDocs.com, including but not limited to text, graphics, logos, and software, are the property of AllYourDocs.com and are protected by copyright and other intellectual property laws.
               </p>
             </section>
 

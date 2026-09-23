@@ -3,6 +3,7 @@
 import { useState, useRef, ChangeEvent, FormEvent, DragEvent } from "react"
 import Link from "next/link"
 import { Upload, Image as ImageIcon, Download, AlertCircle, CheckCircle, Loader2, FileText, Trash2, Eye, X, Grid, Settings, ArrowUpDown, Plus, Minus, RefreshCw } from "lucide-react"
+import ToolSEOSection from "@/components/ToolSEOSection"
 
 interface ImageFile {
   id: string;
@@ -929,8 +930,38 @@ export default function ImageToPDF() {
               ← Back to All Tools
             </Link>
           </div>
+
+          <ToolSEOSection
+            toolName="Image to PDF"
+            toolDescription="Convert multiple images (JPG, PNG, GIF, BMP, WebP) into a single PDF document. Customize page size, orientation, and margins for professional results."
+            howToSteps={[
+              "Click 'Select images' or drag and drop image files onto the upload area",
+              "Add up to 20 images (25MB total)",
+              "Configure PDF settings: page size, orientation, and margins",
+              "Click 'Create PDF' to generate your PDF document",
+              "Download your PDF when ready"
+            ]}
+            faq={[
+              { question: "What image formats are supported?", answer: "We support JPG, PNG, GIF, BMP, and WebP formats. SVG files are converted to PNG format." },
+              { question: "Can I adjust the PDF page settings?", answer: "Yes! Choose from A4, Letter, or Legal page sizes, portrait or landscape orientation, and custom margins." },
+              { question: "Will images be scaled?", answer: "Large images are scaled down to fit the page while maintaining aspect ratio. Smaller images are not scaled up." },
+              { question: "Are my files secure?", answer: "100% secure. All conversion happens in your browser. Image files are never uploaded to any server." },
+              { question: "Does each image become a separate page?", answer: "Yes, by default each image becomes one page in the PDF. You can reorder images before creating the PDF." }
+            ]}
+            tips={[
+              "Use A4 portrait for standard document formatting",
+              "Set margins to 0mm for edge-to-edge images",
+              "Use landscape orientation for wide images like screenshots",
+              "Compress images before uploading for faster processing"
+            ]}
+            relatedTools={[
+              { name: "Compress PDF", path: "/compress-pdf", description: "Reduce PDF file size after creating" },
+              { name: "PDF to Word", path: "/pdf-to-word", description: "Convert your new PDF to Word" },
+              { name: "Image to Text", path: "/image-to-text", description: "Extract text from images using OCR" }
+            ]}
+          />
         </div>
       </div>
     </div>
-  );
+  )
 }

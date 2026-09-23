@@ -22,20 +22,7 @@ export const metadata: Metadata = {
     default: "AllYourDocs.com - Free Online PDF Tools",
     template: "%s | AllYourDocs.com"
   },
-  description: "Free, secure PDF tools. Merge, split, convert PDFs online.",
-  
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  
+  description: "Free, secure PDF tools. Merge, split, convert PDFs online. 100% private processing.",
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -67,7 +54,7 @@ export const metadata: Metadata = {
   
   // Add verification codes here instead of in head
   verification: {
-    google: "your-google-verification-code", // Optional
+    google: "",
   }
 }
 
@@ -151,8 +138,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9089093304511732"
-     crossorigin="anonymous"></script>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3997476774409836"
+         crossOrigin="anonymous"></script>
         
         {/* ✅ JSON-LD Schemas - Server-side only, stable content */}
         <script
@@ -176,9 +163,10 @@ export default function RootLayout({
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/manifest.json" />
-        
-        {/* Preconnect for performance */}
+        <link rel="manifest" href="/site.webmanifest" />
+
+        {/* Google AdSense Meta Tag */}
+        <meta name="google-adsense-account" content="ca-pub-3997476774409836" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
